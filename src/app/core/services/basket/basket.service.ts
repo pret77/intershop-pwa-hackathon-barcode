@@ -20,8 +20,7 @@ import { Basket } from 'ish-core/models/basket/basket.model';
 import { ErrorFeedback } from 'ish-core/models/http-error/http-error.model';
 import { LineItemData } from 'ish-core/models/line-item/line-item.interface';
 import { LineItemMapper } from 'ish-core/models/line-item/line-item.mapper';
-import { LineItem, LineItemView } from 'ish-core/models/line-item/line-item.model';
-import { SkuQuantityType } from 'ish-core/models/product/product.model';
+import { AddLineItemType, LineItem, LineItemView } from 'ish-core/models/line-item/line-item.model';
 import { ShippingMethodData } from 'ish-core/models/shipping-method/shipping-method.interface';
 import { ShippingMethodMapper } from 'ish-core/models/shipping-method/shipping-method.mapper';
 import { ShippingMethod } from 'ish-core/models/shipping-method/shipping-method.model';
@@ -41,15 +40,17 @@ export type BasketItemUpdateType =
   | { quantity?: { value: number; unit: string }; product?: string }
   | { shippingMethod?: { id: string } }
   | { desiredDelivery?: string }
-  | { calculated: boolean };
+  | { calculated: boolean }
+  | { warranty?: string };
 
 type BasketIncludeType =
   | 'invoiceToAddress'
   | 'commonShipToAddress'
   | 'commonShippingMethod'
   | 'discounts'
-  | 'lineItems_discounts'
   | 'lineItems'
+  | 'lineItems_discounts'
+  | 'lineItems_warranty'
   | 'payments'
   | 'payments_paymentMethod'
   | 'payments_paymentInstrument';
@@ -60,8 +61,9 @@ type MergeBasketIncludeType =
   | 'targetBasket_commonShipToAddress'
   | 'targetBasket_commonShippingMethod'
   | 'targetBasket_discounts'
-  | 'targetBasket_lineItems_discounts'
   | 'targetBasket_lineItems'
+  | 'targetBasket_lineItems_discounts'
+  | 'targetBasket_lineItems_warranty'
   | 'targetBasket_payments'
   | 'targetBasket_payments_paymentMethod'
   | 'targetBasket_payments_paymentInstrument';
@@ -72,8 +74,9 @@ type ValidationBasketIncludeType =
   | 'basket_commonShipToAddress'
   | 'basket_commonShippingMethod'
   | 'basket_discounts'
-  | 'basket_lineItems_discounts'
   | 'basket_lineItems'
+  | 'basket_lineItems_discounts'
+  | 'basket_lineItems_warranty'
   | 'basket_payments'
   | 'basket_payments_paymentMethod'
   | 'basket_payments_paymentInstrument';
@@ -98,8 +101,9 @@ export class BasketService {
     'commonShipToAddress',
     'commonShippingMethod',
     'discounts',
-    'lineItems_discounts',
     'lineItems',
+    'lineItems_discounts',
+    'lineItems_warranty',
     'payments',
     'payments_paymentMethod',
     'payments_paymentInstrument',
@@ -111,8 +115,9 @@ export class BasketService {
     'targetBasket_commonShipToAddress',
     'targetBasket_commonShippingMethod',
     'targetBasket_discounts',
-    'targetBasket_lineItems_discounts',
     'targetBasket_lineItems',
+    'targetBasket_lineItems_discounts',
+    'targetBasket_lineItems_warranty',
     'targetBasket_payments',
     'targetBasket_payments_paymentMethod',
     'targetBasket_payments_paymentInstrument',
@@ -124,8 +129,9 @@ export class BasketService {
     'basket_commonShipToAddress',
     'basket_commonShippingMethod',
     'basket_discounts',
-    'basket_lineItems_discounts',
     'basket_lineItems',
+    'basket_lineItems_discounts',
+    'basket_lineItems_warranty',
     'basket_payments',
     'basket_payments_paymentMethod',
     'basket_payments_paymentInstrument',
@@ -336,7 +342,7 @@ export class BasketService {
    *          errors      Errors responded by the server.
    */
   addItemsToBasket(
-    items: SkuQuantityType[]
+    items: AddLineItemType[]
   ): Observable<{ lineItems: LineItem[]; info: BasketInfo[]; errors: ErrorFeedback[] }> {
     if (!items) {
       return throwError(() => new Error('addItemsToBasket() called without items'));
@@ -348,6 +354,7 @@ export class BasketService {
         value: item.quantity,
         unit: item.unit,
       },
+      warranty: item.warrantySku,
     }));
 
     return this.currentBasketEndpoint()

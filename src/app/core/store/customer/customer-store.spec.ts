@@ -27,6 +27,7 @@ import { ProductsService } from 'ish-core/services/products/products.service';
 import { PromotionsService } from 'ish-core/services/promotions/promotions.service';
 import { SuggestService } from 'ish-core/services/suggest/suggest.service';
 import { UserService } from 'ish-core/services/user/user.service';
+import { WarrantyService } from 'ish-core/services/warranty/warranty.service';
 import { CoreStoreModule } from 'ish-core/store/core/core-store.module';
 import { CustomerStoreModule } from 'ish-core/store/customer/customer-store.module';
 import { loadProductSuccess } from 'ish-core/store/shopping/products';
@@ -153,6 +154,7 @@ describe('Customer Store', () => {
 
     const dataRequestsServiceMock = mock(DataRequestsService);
     const filterServiceMock = mock(FilterService);
+    const warrantyServiceMock = mock(WarrantyService);
     const orderServiceMock = mock(OrderService);
     const authorizationServiceMock = mock(AuthorizationService);
 
@@ -195,6 +197,7 @@ describe('Customer Store', () => {
         { provide: PromotionsService, useFactory: () => instance(promotionsServiceMock) },
         { provide: SuggestService, useFactory: () => instance(mock(SuggestService)) },
         { provide: UserService, useFactory: () => instance(userServiceMock) },
+        { provide: WarrantyService, useFactory: () => instance(warrantyServiceMock) },
         provideStoreSnapshots(),
       ],
     });
