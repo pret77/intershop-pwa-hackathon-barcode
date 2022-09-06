@@ -207,6 +207,7 @@ const declaredComponents = [
   LineItemEditDialogComponent,
   LineItemListElementComponent,
   LoginModalComponent,
+  PagingComponent,
   ProductChooseVariationComponent,
   ProductIdComponent,
   ProductItemVariationsComponent,
@@ -285,7 +286,7 @@ const exportedComponents = [
 
 @NgModule({
   imports: [...importExportModules],
-  declarations: [...declaredComponents, ...exportedComponents, PagingComponent],
+  declarations: [...declaredComponents, ...exportedComponents],
   exports: [...exportedComponents, ...importExportModules],
 })
 export class SharedModule {

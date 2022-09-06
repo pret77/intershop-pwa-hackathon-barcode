@@ -1,1 +1,5 @@
-<div *ngIf="pagelet?.hasParam('HTML')" [ishServerHtml]="pagelet.stringParam('HTML')"></div>
+<div
+  *ngIf="pagelet?.hasParam('HTML')"
+  [ishServerHtml]="pagelet.stringParam('HTML')"
+  [ngClass]="pagelet.stringParam('CSSClass')"
+></div>
