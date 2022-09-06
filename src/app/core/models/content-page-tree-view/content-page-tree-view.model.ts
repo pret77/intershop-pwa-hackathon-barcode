@@ -99,3 +99,43 @@ export function createContentPageTreeView(
   const contentPageTree = getContentPageTreeElements(tree, rootId, rootId, contentPageId);
   return unflattenTree(contentPageTree, rootId);
 }
+
+// CUSTOMIZATION
+function getCompleteContentPageTreeElements(
+  tree: ContentPageTree,
+  contentPageId: string,
+  depth: number,
+  currentDepth = 0
+): ContentPageTreeView[] {
+  let treeElements: ContentPageTreeView[] = [];
+
+  if (tree.edges[contentPageId] && (currentDepth < depth || Number.isNaN(depth))) {
+    treeElements = tree.edges[contentPageId]
+      .map(child => getCompleteContentPageTreeElements(tree, child, depth, currentDepth + 1))
+      .flat();
+  }
+
+  const parent = tree.nodes[contentPageId].path[tree.nodes[contentPageId].path.length - 2];
+  treeElements.push({
+    ...tree.nodes[contentPageId],
+    parent,
+    children: [],
+    pathElements: tree.nodes[contentPageId].path.map(p => tree.nodes[p]),
+  });
+
+  return treeElements;
+}
+
+export function createCompleteContentPageTreeView(
+  tree: ContentPageTree,
+  contentPageId: string,
+  depth: number
+): ContentPageTreeView {
+  if (!tree || !contentPageId || !tree.nodes[contentPageId]) {
+    return;
+  }
+
+  const treeElements = getCompleteContentPageTreeElements(tree, contentPageId, depth);
+  return unflattenTree(treeElements, contentPageId);
+}
+// CUSTOMIZATION

@@ -6,7 +6,7 @@ import { delay, switchMap, tap } from 'rxjs/operators';
 import { CallParameters } from 'ish-core/models/call-parameters/call-parameters.model';
 import { CategoryHelper } from 'ish-core/models/category/category.helper';
 import { getContentInclude, loadContentInclude } from 'ish-core/store/content/includes';
-import { getContentPageTree, loadContentPageTree } from 'ish-core/store/content/page-tree';
+import { getCompleteContentPageTree, getContentPageTree, loadContentPageTree } from 'ish-core/store/content/page-tree';
 import { getContentPagelet } from 'ish-core/store/content/pagelets';
 import { getContentPageLoading, getSelectedContentPage } from 'ish-core/store/content/pages';
 import { getParametersProductList, loadParametersProductListFilter } from 'ish-core/store/content/parameters';
@@ -43,6 +43,13 @@ export class CMSFacade {
     this.store.dispatch(loadContentPageTree({ rootId, depth }));
     return this.store.pipe(select(getContentPageTree(rootId)));
   }
+
+  // CUSTOMIZATION
+  completeContentPageTree$(rootId: string, depth: number) {
+    this.store.dispatch(loadContentPageTree({ rootId, depth }));
+    return this.store.pipe(select(getCompleteContentPageTree(rootId, depth)));
+  }
+  // CUSTOMIZATION
 
   parameterProductListFilter$(categoryId?: string, productFilter?: string, scope?: string, amount?: number) {
     const listConfiguration = this.getProductListConfiguration(categoryId, productFilter, scope, amount);
