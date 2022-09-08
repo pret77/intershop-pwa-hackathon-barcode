@@ -8,6 +8,8 @@ export const environment: Environment = {
 
   themeColor: '#688dc3',
 
+  apiMockPaths: ['^cms/includes/include.header.navigation.pagelet2-Include'],
+
   features: [
     ...ENVIRONMENT_DEFAULTS.features,
     'businessCustomerRegistration',
