@@ -75,3 +75,11 @@ export const getNavigationCategories = (uniqueId: string) =>
       ? subTree.edges[uniqueId].map(id => mapNavigationCategoryFromId(id, tree, subTree))
       : [];
   });
+
+export const getNavigationCategory = (categoryRef: string) =>
+  createSelectorFactory<object, NavigationCategory>(projector => resultMemoize(projector, isEqual))(
+    getCategoryIdByRefId(categoryRef),
+    getCategoryTree,
+    (uniqueId: string, tree: CategoryTree): NavigationCategory =>
+      uniqueId ? mapNavigationCategoryFromId(uniqueId, tree, CategoryTreeHelper.subTree(tree, uniqueId)) : undefined
+  );

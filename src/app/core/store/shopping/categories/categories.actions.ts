@@ -12,6 +12,18 @@ export const loadTopLevelCategoriesSuccess = createAction(
   payload<{ categories: CategoryTree }>()
 );
 
+export const loadCategoryTree = createAction(
+  '[Categories Internal] Load a specific category tree',
+  payload<{ categoryRef: string }>()
+);
+
+export const loadCategoryTreeFail = createAction('[Categories API] Load a specific category tree fail', httpError());
+
+export const loadCategoryTreeSuccess = createAction(
+  '[Categories API] Load a specific category tree success',
+  payload<{ categories: CategoryTree }>()
+);
+
 export const loadCategory = createAction('[Categories Internal] Load Category', payload<{ categoryId: string }>());
 
 export const loadCategoryFail = createAction('[Categories API] Load Category Fail', httpError());

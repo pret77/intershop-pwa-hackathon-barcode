@@ -26,6 +26,9 @@ import {
   loadCategoryByRef,
   loadCategoryFail,
   loadCategorySuccess,
+  loadCategoryTree,
+  loadCategoryTreeFail,
+  loadCategoryTreeSuccess,
   loadTopLevelCategories,
   loadTopLevelCategoriesFail,
   loadTopLevelCategoriesSuccess,
@@ -110,6 +113,19 @@ export class CategoriesEffects {
         this.categoryService.getTopLevelCategories(this.mainNavigationMaxSubCategoriesDepth).pipe(
           map(categories => loadTopLevelCategoriesSuccess({ categories })),
           mapErrorToAction(loadTopLevelCategoriesFail)
+        )
+      )
+    )
+  );
+
+  loadCategoryTree$ = createEffect(() =>
+    this.actions$.pipe(
+      useCombinedObservableOnAction(this.actions$.pipe(ofType(loadCategoryTree)), personalizationStatusDetermined),
+      mapToPayloadProperty('categoryRef'),
+      switchMap(categoryRef =>
+        this.categoryService.getCategoryTree(categoryRef).pipe(
+          map(categories => loadCategoryTreeSuccess({ categories })),
+          mapErrorToAction(loadCategoryTreeFail)
         )
       )
     )

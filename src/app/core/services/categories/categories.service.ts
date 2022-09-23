@@ -47,9 +47,9 @@ export class CategoriesService {
    * @returns      A Sorted list of top level categories with sub categories.
    */
   getTopLevelCategories(limit: number): Observable<CategoryTree> {
-    let params = new HttpParams().set('imageView', 'NO-IMAGE');
+    let params = new HttpParams().set('view', 'tree').set('imageView', 'NO-IMAGE').set('omitHasOnlineProducts', 'true');
     if (limit > 0) {
-      params = params.set('view', 'tree').set('limit', limit.toString()).set('omitHasOnlineProducts', 'true');
+      params = params.set('limit', limit.toString());
     }
 
     return this.apiService.get('categories', { sendSPGID: true, params }).pipe(
@@ -60,5 +60,27 @@ export class CategoriesService {
           .reduce((a, b) => CategoryTreeHelper.merge(a, b), CategoryTreeHelper.empty())
       )
     );
+  }
+
+  /**
+   * Get the category tree data for a given categoryRef up to the given depth limit.
+   *
+   * @param categoryRef  The categoryRef for the category of interest
+   * @param limit        The number of levels to be returned (depth) in hierarchical view.
+   * @returns            A category tree for the given category ref.
+   */
+  getCategoryTree(categoryRef: string, limit?: number): Observable<CategoryTree> {
+    if (!categoryRef) {
+      return throwError(() => new Error('getCategoryTree() called without categoryRef'));
+    }
+
+    let params = new HttpParams().set('view', 'tree').set('imageView', 'NO-IMAGE').set('omitHasOnlineProducts', 'true');
+    if (limit > 0) {
+      params = params.set('limit', limit.toString());
+    }
+
+    return this.apiService
+      .get<CategoryData>(`categories/${categoryRef}`, { sendSPGID: true, params })
+      .pipe(map(categoryData => this.categoryMapper.fromData(categoryData)));
   }
 }

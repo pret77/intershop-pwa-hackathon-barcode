@@ -15,8 +15,10 @@ import {
   getCategory,
   getCategoryIdByRefId,
   getNavigationCategories,
+  getNavigationCategory,
   getSelectedCategory,
   loadCategoryByRef,
+  loadCategoryTree,
   loadTopLevelCategories,
 } from 'ish-core/store/shopping/categories';
 import { getAvailableFilter } from 'ish-core/store/shopping/filter';
@@ -70,6 +72,11 @@ export class ShoppingFacade {
       select(getNavigationCategories(uniqueId)),
       filter(categories => !!categories?.length)
     ); // prevent to display an empty navigation bar after login/logout);
+  }
+
+  navigationCategory$(categoryRef: string, limit?: number) {
+    this.store.dispatch(loadCategoryTree({ categoryRef }));
+    return this.store.pipe(select(getNavigationCategory(categoryRef)));
   }
 
   // PRODUCT
