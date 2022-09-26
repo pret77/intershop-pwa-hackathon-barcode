@@ -70,7 +70,6 @@ export class ContentPageTreeHelper {
     return ContentPageTreeHelper.merge(tree, singleContentPageTree);
   }
 
-  // CUSTOMIZATION
   /**
    * Extract a sub tree.
    */
@@ -104,7 +103,6 @@ export class ContentPageTreeHelper {
       ContentPageTreeHelper.contentEqual(tree1.nodes, tree2.nodes)
     );
   }
-  // CUSTOMIZATION
 
   private static removeDuplicates<T>(input: T[]): T[] {
     return input.filter((value, index, array) => array.indexOf(value) === index);
@@ -158,7 +156,6 @@ export class ContentPageTreeHelper {
     }
   }
 
-  // CUSTOMIZATION
   private static rootIdsEqual(t1: string[], t2: string[]) {
     return t1.length === t2.length && t1.every(e => t2.includes(e));
   }
@@ -179,5 +176,4 @@ export class ContentPageTreeHelper {
       keys1.every(id => isEqual(t1[id], t2[id]))
     );
   }
-  // CUSTOMIZATION
 }

@@ -44,12 +44,10 @@ export class CMSFacade {
     return this.store.pipe(select(getContentPageTree(rootId)));
   }
 
-  // CUSTOMIZATION
   completeContentPageTree$(rootId: string, depth: number) {
     this.store.dispatch(loadContentPageTree({ rootId, depth }));
     return this.store.pipe(select(getCompleteContentPageTree(rootId, depth)));
   }
-  // CUSTOMIZATION
 
   parameterProductListFilter$(categoryId?: string, productFilter?: string, scope?: string, amount?: number) {
     const listConfiguration = this.getProductListConfiguration(categoryId, productFilter, scope, amount);

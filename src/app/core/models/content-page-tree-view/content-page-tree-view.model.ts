@@ -95,12 +95,9 @@ export function createContentPageTreeView(
   if (!tree || !rootId || !tree.nodes[rootId] || !isContentPagePartOfPageTreeElement(tree, contentPageId, rootId)) {
     return;
   }
-
-  const contentPageTree = getContentPageTreeElements(tree, rootId, rootId, contentPageId);
-  return unflattenTree(contentPageTree, rootId);
+  return unflattenTree(getContentPageTreeElements(tree, rootId, rootId, contentPageId), rootId);
 }
 
-// CUSTOMIZATION
 function getCompleteContentPageTreeElements(
   tree: ContentPageTree,
   contentPageId: string,
@@ -134,8 +131,5 @@ export function createCompleteContentPageTreeView(
   if (!tree || !contentPageId || !tree.nodes[contentPageId]) {
     return;
   }
-
-  const treeElements = getCompleteContentPageTreeElements(tree, contentPageId, depth);
-  return unflattenTree(treeElements, contentPageId);
+  return unflattenTree(getCompleteContentPageTreeElements(tree, contentPageId, depth), contentPageId);
 }
-// CUSTOMIZATION

@@ -28,7 +28,6 @@ export const getContentPageTree = (rootId: string) =>
     (pagetree: ContentPageTree, contentPageId: string) => createContentPageTreeView(pagetree, rootId, contentPageId)
   );
 
-// CUSTOMIZATION
 /**
  * Get the complete content page tree (all branches) for the given root to the given depth.
  *
@@ -42,8 +41,5 @@ export const getCompleteContentPageTree = (rootId: string, depth: number) =>
     if (!rootId) {
       return;
     }
-
-    const subTree = ContentPageTreeHelper.subTree(tree, rootId);
-    return createCompleteContentPageTreeView(subTree, rootId, depth);
+    return createCompleteContentPageTreeView(ContentPageTreeHelper.subTree(tree, rootId), rootId, depth);
   });
-// CUSTOMIZATION
