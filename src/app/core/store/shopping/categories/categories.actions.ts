@@ -14,7 +14,7 @@ export const loadTopLevelCategoriesSuccess = createAction(
 
 export const loadCategoryTree = createAction(
   '[Categories Internal] Load a specific category tree',
-  payload<{ categoryRef: string }>()
+  payload<{ categoryRef: string; limit: number }>()
 );
 
 export const loadCategoryTreeFail = createAction('[Categories API] Load a specific category tree fail', httpError());

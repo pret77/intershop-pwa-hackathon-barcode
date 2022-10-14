@@ -37,7 +37,7 @@ import { LazyContentIncludeComponent } from './shared/lazy-content-include/lazy-
 import { LazyMiniBasketContentComponent } from './shared/lazy-mini-basket-content/lazy-mini-basket-content.component';
 import { LazySearchBoxComponent } from './shared/lazy-search-box/lazy-search-box.component';
 
-const exportedComponents = [CookiesBannerComponent, FooterComponent, HeaderComponent];
+const exportedComponents = [CookiesBannerComponent, FooterComponent, HeaderComponent, SubCategoryNavigationComponent];
 
 @NgModule({
   imports: [
@@ -74,7 +74,6 @@ const exportedComponents = [CookiesBannerComponent, FooterComponent, HeaderCompo
     LazySearchBoxComponent,
     LoginStatusComponent,
     MiniBasketComponent,
-    SubCategoryNavigationComponent,
     UserInformationMobileComponent,
   ],
   exports: [...exportedComponents],

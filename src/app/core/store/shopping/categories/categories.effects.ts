@@ -13,9 +13,11 @@ import { selectRouteParam } from 'ish-core/store/core/router';
 import { setBreadcrumbData } from 'ish-core/store/core/viewconf';
 import { personalizationStatusDetermined } from 'ish-core/store/customer/user';
 import { loadMoreProducts } from 'ish-core/store/shopping/product-listing';
+import { log } from 'ish-core/utils/dev/operators';
 import { HttpStatusCodeService } from 'ish-core/utils/http-status-code/http-status-code.service';
 import {
   mapErrorToAction,
+  mapToPayload,
   mapToPayloadProperty,
   useCombinedObservableOnAction,
   whenTruthy,
@@ -121,9 +123,11 @@ export class CategoriesEffects {
   loadCategoryTree$ = createEffect(() =>
     this.actions$.pipe(
       useCombinedObservableOnAction(this.actions$.pipe(ofType(loadCategoryTree)), personalizationStatusDetermined),
-      mapToPayloadProperty('categoryRef'),
-      switchMap(categoryRef =>
-        this.categoryService.getCategoryTree(categoryRef).pipe(
+      log('nach der Action'),
+      mapToPayload(),
+      log('payload'),
+      switchMap(({ categoryRef, limit }) =>
+        this.categoryService.getCategoryTree(categoryRef, limit).pipe(
           map(categories => loadCategoryTreeSuccess({ categories })),
           mapErrorToAction(loadCategoryTreeFail)
         )

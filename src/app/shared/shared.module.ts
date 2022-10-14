@@ -21,6 +21,7 @@ import { IconModule } from 'ish-core/icon.module';
 import { PipesModule } from 'ish-core/pipes.module';
 import { RoleToggleModule } from 'ish-core/role-toggle.module';
 import { ModuleLoaderService } from 'ish-core/utils/module-loader/module-loader.service';
+import { ShellModule } from 'ish-shell/shell.module';
 
 import { CaptchaExportsModule } from '../extensions/captcha/exports/captcha-exports.module';
 import { CompareExportsModule } from '../extensions/compare/exports/compare-exports.module';
@@ -42,6 +43,7 @@ import { CMSDialogComponent } from './cms/components/cms-dialog/cms-dialog.compo
 import { CMSFreestyleComponent } from './cms/components/cms-freestyle/cms-freestyle.component';
 import { CMSImageEnhancedComponent } from './cms/components/cms-image-enhanced/cms-image-enhanced.component';
 import { CMSImageComponent } from './cms/components/cms-image/cms-image.component';
+import { CMSNavigationCategoryComponent } from './cms/components/cms-navigation-category/cms-navigation-category.component';
 import { CMSNavigationLinkComponent } from './cms/components/cms-navigation-link/cms-navigation-link.component';
 import { CMSNavigationPageComponent } from './cms/components/cms-navigation-page/cms-navigation-page.component';
 import { CMSProductListCategoryComponent } from './cms/components/cms-product-list-category/cms-product-list-category.component';
@@ -171,6 +173,7 @@ const importExportModules = [
   RecentlyExportsModule,
   RoleToggleModule,
   RouterModule,
+  ShellModule,
   StoreLocatorExportsModule,
   SwiperModule,
   TactonExportsModule,
@@ -290,7 +293,7 @@ const exportedComponents = [
 
 @NgModule({
   imports: [...importExportModules],
-  declarations: [...declaredComponents, ...exportedComponents],
+  declarations: [...declaredComponents, ...exportedComponents, CMSNavigationCategoryComponent],
   exports: [...exportedComponents, ...importExportModules],
 })
 export class SharedModule {

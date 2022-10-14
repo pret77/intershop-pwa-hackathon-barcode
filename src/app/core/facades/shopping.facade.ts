@@ -75,7 +75,7 @@ export class ShoppingFacade {
   }
 
   navigationCategory$(categoryRef: string, limit?: number) {
-    this.store.dispatch(loadCategoryTree({ categoryRef }));
+    this.store.dispatch(loadCategoryTree({ categoryRef, limit }));
     return this.store.pipe(select(getNavigationCategory(categoryRef)));
   }
 

@@ -84,6 +84,47 @@
         }
       },
       "customAttributes": {}
+    },
+    {
+      "type": "PageletRO",
+      "definitionQualifiedName": "app_sf_base_cm:component.navigation.category.pagelet2-Component",
+      "link": {
+        "type": "Link",
+        "uri": "/inSPIRED-inTRONICS_Business-Site/rest/cms/pagelets/cmp_NAVIGATION_CATEGORY",
+        "title": "NAVIGATION CATEGORY",
+        "itemId": "cmp_NAVIGATION_CATEGORY"
+      },
+      "displayName": "NAVIGATION CATEGORY",
+      "id": "cmp_20220912_152120",
+      "domain": "inSPIRED-inTRONICS_Business-rest",
+      "configurationParameters": {
+        "NavigationCategory": {
+          "value": "Computers@inSPIRED-Computers",
+          "type": "bc_catalog:types.pagelet2-CategoryBO",
+          "definitionQualifiedName": "app_sf_base_cm:component.navigation.category.pagelet2-Component-NavigationCategory"
+        },
+        "DisplayName": {
+          "value": "Category",
+          "type": "bc_pmc:types.pagelet2-Text",
+          "definitionQualifiedName": "app_sf_base_cm:component.navigation.category.pagelet2-Component-AlternateNavigationTitle"
+        },
+        "SubNavigationDepth": {
+          "value": "3",
+          "type": "bc_pmc:types.pagelet2-Integer",
+          "definitionQualifiedName": "app_sf_base_cm:component.navigation.category.pagelet2-Component-SubNavigationDepth"
+        },
+        "CSSClass": {
+          "value": "testing",
+          "type": "bc_pmc:types.pagelet2-Text",
+          "definitionQualifiedName": "app_sf_base_cm:component.navigation.category.pagelet2-Component-CSSClass"
+        },
+        "SubNavigationHTML": {
+          "value": "<p><span style=\"background-color: #169179;\">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</span></p>",
+          "type": "bc_pmc:types.pagelet2-Html",
+          "definitionQualifiedName": "app_sf_base_cm:component.navigation.link.pagelet2-Component-SubNavigationHTML"
+        }
+      },
+      "customAttributes": {}
     }
   ],
   "displayName": "Header - Navigation",

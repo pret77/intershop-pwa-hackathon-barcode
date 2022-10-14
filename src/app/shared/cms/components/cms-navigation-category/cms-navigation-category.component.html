@@ -1,0 +1,26 @@
+<ng-container *ngIf="pagelet?.hasParam('NavigationCategory')">
+  <li
+    *ngIf="category$ | async as category"
+    #subMenu
+    [class]="'dropdown not-first ' + pagelet.stringParam('CSSClass')"
+    (mouseover)="subMenuShow(subMenu)"
+    (mouseleave)="subMenuHide(subMenu)"
+    (click)="subMenuHide(subMenu)"
+  >
+    <ng-container *ngIf="pagelet.hasParam('DisplayName'); else noDisplayName">
+      <a [routerLink]="category.url" [ngStyle]="{ width: !(showSubMenu() && category.hasChildren) ? '100%' : '' }">
+        <div [ishServerHtml]="pagelet.stringParam('DisplayName')"></div>
+      </a>
+    </ng-container>
+    <ng-template #noDisplayName>
+      <a [routerLink]="category.url">{{ category.name }}</a>
+    </ng-template>
+    <ng-container *ngIf="showSubMenu() || pagelet.hasParam('SubNavigationHTML')">
+      <ish-sub-category-navigation
+        [categoryUniqueId]="category.uniqueId"
+        [subCategoriesDepth]="1"
+        [view]="'auto'"
+      ></ish-sub-category-navigation>
+    </ng-container>
+  </li>
+</ng-container>
