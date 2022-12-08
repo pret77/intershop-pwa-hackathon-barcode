@@ -4,9 +4,11 @@ import { ActivatedRoute, ActivatedRouteSnapshot, UrlSegment } from '@angular/rou
 import { TranslateModule } from '@ngx-translate/core';
 import { MockComponent } from 'ng-mocks';
 import { of } from 'rxjs';
+import { LazyAddressDoctorComponent } from 'src/app/extensions/address-doctor/exports/lazy-address-doctor/lazy-address-doctor.component';
 import { anything, instance, mock, verify, when } from 'ts-mockito';
 
 import { AccountFacade } from 'ish-core/facades/account.facade';
+import { FeatureToggleModule } from 'ish-core/feature-toggle.module';
 import { ErrorMessageComponent } from 'ish-shared/components/common/error-message/error-message.component';
 import { FormlyTestingModule } from 'ish-shared/formly/dev/testing/formly-testing.module';
 
@@ -26,8 +28,12 @@ describe('Registration Page Component', () => {
     configService = mock(RegistrationFormConfigurationService);
     activatedRoute = mock(ActivatedRoute);
     await TestBed.configureTestingModule({
-      declarations: [MockComponent(ErrorMessageComponent), RegistrationPageComponent],
-      imports: [FormlyTestingModule, TranslateModule.forRoot()],
+      declarations: [
+        MockComponent(ErrorMessageComponent),
+        MockComponent(LazyAddressDoctorComponent),
+        RegistrationPageComponent,
+      ],
+      imports: [FeatureToggleModule.forTesting('addressDoctor'), FormlyTestingModule, TranslateModule.forRoot()],
       providers: [
         { provide: AccountFacade, useFactory: () => instance(accountFacade) },
         { provide: ActivatedRoute, useFactory: () => instance(activatedRoute) },

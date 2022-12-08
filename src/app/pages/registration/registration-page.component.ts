@@ -1,11 +1,14 @@
 /* eslint-disable ish-custom-rules/no-intelligence-in-artifacts */
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { UntypedFormGroup } from '@angular/forms';
+import { ChangeDetectionStrategy, Component, OnInit, ViewChild } from '@angular/core';
+import { AbstractControl, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { FormlyFieldConfig, FormlyFormOptions } from '@ngx-formly/core';
 import { Observable, tap } from 'rxjs';
+import { LazyAddressDoctorComponent } from 'src/app/extensions/address-doctor/exports/lazy-address-doctor/lazy-address-doctor.component';
 
 import { AccountFacade } from 'ish-core/facades/account.facade';
+import { FeatureToggleService } from 'ish-core/feature-toggle.module';
+import { Address } from 'ish-core/models/address/address.model';
 import { HttpError } from 'ish-core/models/http-error/http-error.model';
 import { whenTruthy } from 'ish-core/utils/operators';
 import { markAsDirtyRecursive } from 'ish-shared/forms/utils/form-utils';
@@ -26,10 +29,13 @@ import {
 export class RegistrationPageComponent implements OnInit {
   error$: Observable<HttpError>;
 
+  @ViewChild(LazyAddressDoctorComponent) addressDoctorComponent: LazyAddressDoctorComponent;
+
   constructor(
     private route: ActivatedRoute,
     private registrationFormConfiguration: RegistrationFormConfigurationService,
-    private accountFacade: AccountFacade
+    private accountFacade: AccountFacade,
+    private featureToggleService: FeatureToggleService
   ) {}
 
   submitted = false;
@@ -67,6 +73,24 @@ export class RegistrationPageComponent implements OnInit {
       return;
     }
     // keep-localization-pattern: ^customer\..*\.error$
+    if (this.featureToggleService.enabled('addressDoctor')) {
+      this.addressDoctorComponent.checkAddress(this.form.get('address').value, 'register');
+    } else {
+      this.submitRegistrationForm();
+    }
+  }
+
+  onCreateWithSuggestion(address: Address) {
+    (this.form.get('address').get('addressLine1') as AbstractControl).setValue(address.addressLine1);
+    (this.form.get('address').get('postalCode') as AbstractControl).setValue(address.postalCode);
+    (this.form.get('address').get('city') as AbstractControl).setValue(address.city);
+    if (this.form.get('address').get('mainDivisionCode')) {
+      (this.form.get('address').get('mainDivisionCode') as AbstractControl).setValue(address.mainDivisionCode);
+    }
+    this.submitRegistrationForm();
+  }
+
+  submitRegistrationForm() {
     this.registrationFormConfiguration.submitRegistrationForm(this.form, this.registrationConfig, this.model);
   }
 
