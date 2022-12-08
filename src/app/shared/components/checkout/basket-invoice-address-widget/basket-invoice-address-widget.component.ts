@@ -1,11 +1,13 @@
-import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { FormlyFieldConfig } from '@ngx-formly/core';
 import { BehaviorSubject, Observable, Subject, combineLatest } from 'rxjs';
 import { filter, map, shareReplay, take, takeUntil } from 'rxjs/operators';
+import { LazyAddressDoctorComponent } from 'src/app/extensions/address-doctor/exports/lazy-address-doctor/lazy-address-doctor.component';
 
 import { AccountFacade } from 'ish-core/facades/account.facade';
 import { CheckoutFacade } from 'ish-core/facades/checkout.facade';
+import { FeatureToggleService } from 'ish-core/feature-toggle.module';
 import { Address } from 'ish-core/models/address/address.model';
 import { whenTruthy } from 'ish-core/utils/operators';
 import { FormsService } from 'ish-shared/forms/utils/forms.service';
@@ -40,9 +42,15 @@ export class BasketInvoiceAddressWidgetComponent implements OnInit, OnDestroy {
   editAddress: Partial<Address>;
   emptyOptionLabel = 'checkout.addresses.select_invoice_address.button';
 
+  @ViewChild(LazyAddressDoctorComponent) addressDoctorComponent: LazyAddressDoctorComponent;
+
   private destroy$ = new Subject<void>();
 
-  constructor(private checkoutFacade: CheckoutFacade, private accountFacade: AccountFacade) {}
+  constructor(
+    private checkoutFacade: CheckoutFacade,
+    private accountFacade: AccountFacade,
+    private featureToggleService: FeatureToggleService
+  ) {}
 
   ngOnInit() {
     this.customerAddresses$ = this.accountFacade.addresses$().pipe(shareReplay(1));
@@ -120,11 +128,19 @@ export class BasketInvoiceAddressWidgetComponent implements OnInit, OnDestroy {
 
   saveAddress(address: Address) {
     if (this.editAddress && Object.keys(this.editAddress).length > 0) {
-      this.checkoutFacade.updateBasketAddress(address);
+      if (this.featureToggleService.enabled('addressDoctor')) {
+        this.addressDoctorComponent.checkAddress(address, 'checkout-update');
+      } else {
+        this.checkoutFacade.updateBasketAddress(address);
+      }
       this.collapse = true;
     } else {
-      this.checkoutFacade.createBasketAddress(address, 'invoice');
-      (this.form.get('id') as UntypedFormControl).setValue('', { emitEvent: false });
+      if (this.featureToggleService.enabled('addressDoctor')) {
+        this.addressDoctorComponent.checkAddress(address, 'checkout-invoice-create');
+      } else {
+        this.checkoutFacade.createBasketAddress(address, 'invoice');
+        (this.form.get('id') as UntypedFormControl).setValue('', { emitEvent: false });
+      }
     }
   }
 

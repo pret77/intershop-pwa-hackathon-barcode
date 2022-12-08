@@ -5,9 +5,11 @@ import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
 import { MockComponent } from 'ng-mocks';
 import { of } from 'rxjs';
+import { LazyAddressDoctorComponent } from 'src/app/extensions/address-doctor/exports/lazy-address-doctor/lazy-address-doctor.component';
 import { anything, instance, mock, verify, when } from 'ts-mockito';
 
 import { AccountFacade } from 'ish-core/facades/account.facade';
+import { FeatureToggleModule } from 'ish-core/feature-toggle.module';
 import { Address } from 'ish-core/models/address/address.model';
 import { makeHttpError } from 'ish-core/utils/dev/api-service-utils';
 import { AddressComponent } from 'ish-shared/components/address/address/address.component';
@@ -84,9 +86,15 @@ describe('Account Addresses Component', () => {
         MockComponent(ErrorMessageComponent),
         MockComponent(FaIconComponent),
         MockComponent(FormlyCustomerAddressFormComponent),
+        MockComponent(LazyAddressDoctorComponent),
         MockComponent(ModalDialogComponent),
       ],
-      imports: [FormlyTestingModule, RouterTestingModule, TranslateModule.forRoot()],
+      imports: [
+        FeatureToggleModule.forTesting('addressDoctor'),
+        FormlyTestingModule,
+        RouterTestingModule,
+        TranslateModule.forRoot(),
+      ],
       providers: [{ provide: AccountFacade, useFactory: () => instance(accountFacade) }],
     })
       .overrideComponent(AccountAddressesComponent, {

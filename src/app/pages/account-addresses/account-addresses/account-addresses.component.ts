@@ -1,10 +1,12 @@
-import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { FormlyFieldConfig } from '@ngx-formly/core';
 import { Observable, Subject, combineLatest } from 'rxjs';
 import { distinctUntilChanged, filter, map, shareReplay, takeUntil, withLatestFrom } from 'rxjs/operators';
+import { LazyAddressDoctorComponent } from 'src/app/extensions/address-doctor/exports/lazy-address-doctor/lazy-address-doctor.component';
 
 import { AccountFacade } from 'ish-core/facades/account.facade';
+import { FeatureToggleService } from 'ish-core/feature-toggle.module';
 import { AddressHelper } from 'ish-core/models/address/address.helper';
 import { Address } from 'ish-core/models/address/address.model';
 import { HttpError } from 'ish-core/models/http-error/http-error.model';
@@ -41,9 +43,11 @@ export class AccountAddressesComponent implements OnInit, OnDestroy {
   preferredAddressForm: FormGroup = new FormGroup({});
   furtherAddresses: Address[] = [];
 
+  @ViewChild(LazyAddressDoctorComponent) addressDoctorComponent: LazyAddressDoctorComponent;
+
   private destroy$ = new Subject<void>();
 
-  constructor(private accountFacade: AccountFacade) {}
+  constructor(private accountFacade: AccountFacade, private featureToggleService: FeatureToggleService) {}
 
   ngOnInit() {
     this.addresses$ = this.accountFacade.addresses$().pipe(shareReplay(1));
@@ -167,11 +171,19 @@ export class AccountAddressesComponent implements OnInit, OnDestroy {
   }
 
   createAddress(address: Address) {
-    this.accountFacade.createCustomerAddress(address);
+    if (this.featureToggleService.enabled('addressDoctor')) {
+      this.addressDoctorComponent.checkAddress(address, 'account-create');
+    } else {
+      this.accountFacade.createCustomerAddress(address);
+    }
   }
 
   updateAddress(address: Address): void {
-    this.accountFacade.updateCustomerAddress(address);
+    if (this.featureToggleService.enabled('addressDoctor')) {
+      this.addressDoctorComponent.checkAddress(address, 'account-update');
+    } else {
+      this.accountFacade.updateCustomerAddress(address);
+    }
     this.hideUpdateAddressForm();
   }
 
