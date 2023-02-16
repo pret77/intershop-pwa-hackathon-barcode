@@ -38,10 +38,10 @@ import {
   loadBasket,
   updateBasketItem,
   updateBasketItemFail,
+  updateBasketItemSuccess,
   updateBasketItems,
   updateBasketItemsFail,
   updateBasketItemsSuccess,
-  updateBasketItemSuccess,
   validateBasket,
 } from './basket.actions';
 import { getCurrentBasket, getCurrentBasketId } from './basket.selectors';
@@ -117,12 +117,7 @@ export class BasketItemsEffects {
       filter(([payload, basket]) => !!basket.lineItems && !!payload),
       concatMap(([lineItem]) =>
         this.basketService
-          .updateBasketItem(lineItem.itemId, {
-            quantity: lineItem.quantity > 0 ? { value: lineItem.quantity, unit: lineItem.unit } : undefined,
-            product: lineItem.sku,
-            // eslint-disable-next-line unicorn/no-null
-            warranty: lineItem.warrantySku ? lineItem.warrantySku : null, // undefined is not working here
-          })
+          .updateBasketItem(lineItem.itemId, LineItemUpdateHelper.determineUpdateItemPayload(lineItem))
           .pipe(
             map(payload => updateBasketItemSuccess(payload)),
             mapErrorToAction(updateBasketItemFail)

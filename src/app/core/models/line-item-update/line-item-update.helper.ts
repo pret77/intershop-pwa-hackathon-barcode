@@ -1,4 +1,5 @@
 import { LineItem } from 'ish-core/models/line-item/line-item.model';
+import { BasketItemUpdateType } from 'ish-core/services/basket/basket.service';
 
 import { LineItemUpdate } from './line-item-update.model';
 
@@ -23,5 +24,17 @@ export class LineItemUpdateHelper {
           (update.sku && update.sku !== item.productSKU)
       )
       .map(({ update }) => update);
+  }
+
+  static determineUpdateItemPayload(lineItem: LineItemUpdate): BasketItemUpdateType {
+    const payload: BasketItemUpdateType = {
+      quantity: lineItem.quantity > 0 ? { value: lineItem.quantity, unit: lineItem.unit } : undefined,
+      product: lineItem.sku,
+    };
+
+    if (lineItem.warrantySku || lineItem.warrantySku === '')
+      // eslint-disable-next-line unicorn/no-null
+      return { ...payload, warranty: lineItem.warrantySku ? lineItem.warrantySku : null }; // undefined is not working here
+    return payload;
   }
 }
