@@ -16,6 +16,7 @@ import { ServerSettingPipe } from 'ish-core/pipes/server-setting.pipe';
 import { BasketMockData } from 'ish-core/utils/dev/basket-mock-data';
 import { findAllCustomElements } from 'ish-core/utils/dev/html-query-utils';
 import { LineItemEditComponent } from 'ish-shared/components/line-item/line-item-edit/line-item-edit.component';
+import { LineItemWarrantyComponent } from 'ish-shared/components/line-item/line-item-warranty/line-item-warranty.component';
 import { ProductBundleDisplayComponent } from 'ish-shared/components/product/product-bundle-display/product-bundle-display.component';
 import { ProductIdComponent } from 'ish-shared/components/product/product-id/product-id.component';
 import { ProductImageComponent } from 'ish-shared/components/product/product-image/product-image.component';
@@ -49,6 +50,7 @@ describe('Line Item List Element Component', () => {
         MockComponent(LazyProductAddToOrderTemplateComponent),
         MockComponent(LazyProductAddToWishlistComponent),
         MockComponent(LineItemEditComponent),
+        MockComponent(LineItemWarrantyComponent),
         MockComponent(ProductBundleDisplayComponent),
         MockComponent(ProductIdComponent),
         MockComponent(ProductImageComponent),
@@ -134,23 +136,24 @@ describe('Line Item List Element Component', () => {
     it('should display standard elements for normal products', () => {
       fixture.detectChanges();
       expect(findAllCustomElements(element)).toMatchInlineSnapshot(`
-      Array [
-        "ish-product-image",
-        "ish-product-name",
-        "ish-product-id",
-        "ish-product-variation-display",
-        "ish-product-bundle-display",
-        "ish-line-item-edit",
-        "ish-product-inventory",
-        "ish-product-shipment",
-        "fa-icon",
-        "ish-lazy-product-add-to-order-template",
-        "ish-lazy-product-add-to-wishlist",
-        "fa-icon",
-        "ish-product-quantity",
-        "ish-product-quantity",
-      ]
-    `);
+        Array [
+          "ish-product-image",
+          "ish-product-name",
+          "ish-product-id",
+          "ish-product-variation-display",
+          "ish-product-bundle-display",
+          "ish-line-item-edit",
+          "ish-product-inventory",
+          "ish-product-shipment",
+          "fa-icon",
+          "ish-lazy-product-add-to-order-template",
+          "ish-lazy-product-add-to-wishlist",
+          "fa-icon",
+          "ish-product-quantity",
+          "ish-product-quantity",
+          "ish-line-item-warranty",
+        ]
+      `);
     });
 
     it('should display bundle parts for bundle products', () => {
