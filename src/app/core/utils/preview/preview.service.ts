@@ -1,4 +1,3 @@
-/* eslint-disable ish-custom-rules/no-intelligence-in-artifacts */
 import { ApplicationRef, Injectable } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { Store, select } from '@ngrx/store';
@@ -7,7 +6,7 @@ import { Subject, delay, filter, first, fromEvent, map, race, switchMap, take, t
 import { getICMBaseURL } from 'ish-core/store/core/configuration';
 import { whenTruthy } from 'ish-core/utils/operators';
 
-interface StorefrontEditingMessage {
+export interface StorefrontEditingMessage {
   type: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   payload?: any;
@@ -79,7 +78,12 @@ export class PreviewService {
    * (3) OR the debug mode is on (`initOnTopLevel`).
    */
   private shouldInit() {
-    return typeof window !== 'undefined' && ((window.parent && window.parent !== window) || this.initOnTopLevel);
+    // TODO: replace usage of previewContextId to identify Design View mode
+    return (
+      typeof window !== 'undefined' &&
+      ((window.parent && window.parent !== window) || this.initOnTopLevel) &&
+      this.previewContextId !== 'DESIGNVIEW'
+    );
   }
 
   /**

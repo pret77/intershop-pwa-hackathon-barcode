@@ -2,7 +2,7 @@ import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/c
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
-import { PreviewService } from 'ish-core/services/preview/preview.service';
+import { PreviewService } from 'ish-core/utils/preview/preview.service';
 
 /**
  * add PreviewContextID to every request if it is available in the SessionStorage
@@ -12,7 +12,8 @@ export class PreviewInterceptor implements HttpInterceptor {
   constructor(private previewService: PreviewService) {}
 
   intercept(req: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-    if (this.previewService.previewContextId) {
+    // TODO: replace usage of previewContextId to identify Design View mode
+    if (this.previewService.previewContextId && this.previewService.previewContextId !== 'DESIGNVIEW') {
       return next.handle(
         req.clone({
           url: `${req.url};prectx=${this.previewService.previewContextId}`,
