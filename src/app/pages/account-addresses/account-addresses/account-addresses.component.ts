@@ -1,9 +1,8 @@
-import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { FormlyFieldConfig } from '@ngx-formly/core';
 import { Observable, Subject, combineLatest } from 'rxjs';
-import { distinctUntilChanged, filter, map, shareReplay, takeUntil, withLatestFrom } from 'rxjs/operators';
-import { LazyAddressDoctorComponent } from 'src/app/extensions/address-doctor/exports/lazy-address-doctor/lazy-address-doctor.component';
+import { distinctUntilChanged, filter, map, shareReplay, take, takeUntil, withLatestFrom } from 'rxjs/operators';
 
 import { AccountFacade } from 'ish-core/facades/account.facade';
 import { FeatureToggleService } from 'ish-core/feature-toggle.module';
@@ -11,6 +10,7 @@ import { AddressHelper } from 'ish-core/models/address/address.helper';
 import { Address } from 'ish-core/models/address/address.model';
 import { HttpError } from 'ish-core/models/http-error/http-error.model';
 import { User } from 'ish-core/models/user/user.model';
+import { FeatureEventService } from 'ish-core/utils/feature-event/feature-event.service';
 import { whenTruthy } from 'ish-core/utils/operators';
 import { mapToAddressOptions } from 'ish-shared/forms/utils/forms.service';
 
@@ -28,7 +28,6 @@ export class AccountAddressesComponent implements OnInit, OnDestroy {
 
   addresses$: Observable<Address[]>;
   user$: Observable<User>;
-
   hasPreferredAddresses = false;
   preferredAddressesEqual: boolean;
   preferredInvoiceToAddress: Address;
@@ -43,11 +42,13 @@ export class AccountAddressesComponent implements OnInit, OnDestroy {
   preferredAddressForm: FormGroup = new FormGroup({});
   furtherAddresses: Address[] = [];
 
-  @ViewChild(LazyAddressDoctorComponent) addressDoctorComponent: LazyAddressDoctorComponent;
-
   private destroy$ = new Subject<void>();
 
-  constructor(private accountFacade: AccountFacade, private featureToggleService: FeatureToggleService) {}
+  constructor(
+    private accountFacade: AccountFacade,
+    private featureToggleService: FeatureToggleService,
+    private featureEventService: FeatureEventService
+  ) {}
 
   ngOnInit() {
     this.addresses$ = this.accountFacade.addresses$().pipe(shareReplay(1));
@@ -172,7 +173,18 @@ export class AccountAddressesComponent implements OnInit, OnDestroy {
 
   createAddress(address: Address) {
     if (this.featureToggleService.enabled('addressDoctor')) {
-      this.addressDoctorComponent.checkAddress(address, 'account-create');
+      const id = this.featureEventService.sendNotification('addressDoctor', 'check-address', {
+        address,
+      });
+
+      this.featureEventService
+        .eventResultListener$('addressDoctor', 'check-address', id)
+        .pipe(whenTruthy(), take(1), takeUntil(this.destroy$))
+        .subscribe(({ data }) => {
+          if (data) {
+            this.accountFacade.createCustomerAddress(data);
+          }
+        });
     } else {
       this.accountFacade.createCustomerAddress(address);
     }
@@ -180,7 +192,18 @@ export class AccountAddressesComponent implements OnInit, OnDestroy {
 
   updateAddress(address: Address): void {
     if (this.featureToggleService.enabled('addressDoctor')) {
-      this.addressDoctorComponent.checkAddress(address, 'account-update');
+      const id = this.featureEventService.sendNotification('addressDoctor', 'check-address', {
+        address,
+      });
+
+      this.featureEventService
+        .eventResultListener$('addressDoctor', 'check-address', id)
+        .pipe(whenTruthy(), take(1), takeUntil(this.destroy$))
+        .subscribe(({ data }) => {
+          if (data) {
+            this.accountFacade.updateCustomerAddress(data);
+          }
+        });
     } else {
       this.accountFacade.updateCustomerAddress(address);
     }

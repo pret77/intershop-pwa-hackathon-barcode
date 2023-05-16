@@ -26,8 +26,6 @@
   </form>
 </div>
 
-<ng-container *ishFeature="'addressDoctor'">
-  <ish-lazy-address-doctor [size]="'lg'" (register)="onCreateWithSuggestion($event)"></ish-lazy-address-doctor>
-</ng-container>
+<ish-lazy-address-doctor></ish-lazy-address-doctor>
 
 <ish-loading *ngIf="loading$ | async"></ish-loading>

@@ -1,41 +1,32 @@
-import { Injectable } from '@angular/core';
-import { filter, map } from 'rxjs';
+import { Injectable, inject } from '@angular/core';
+import { isEqual } from 'lodash-es';
+import { Observable, map, of, race, tap, timer } from 'rxjs';
 
 import { Address } from 'ish-core/models/address/address.model';
 
-import { AddressDoctorVariant, AddressDoctorVariants } from '../models/address-doctor-variant.model';
-import { AddressDoctorApiService } from '../services/address-doctor-api/address-doctor-api.service';
+import { AddressDoctorService } from '../services/address-doctor/address-doctor.service';
 
 @Injectable({ providedIn: 'root' })
 export class AddressDoctorFacade {
-  constructor(private adressDoctorApi: AddressDoctorApiService) {}
+  private addressDoctorService = inject(AddressDoctorService);
 
-  checkAddress(address: Address) {
-    return this.adressDoctorApi.postAddress(address).pipe(
-      filter(variants => variants.length > 0),
-      map((variants: unknown[]) =>
-        variants.map((variant: AddressDoctorVariants) => this.mapAddress(address, variant.Variants[0]))
-      )
-    );
-  }
+  private lastAddressCheck: Address;
+  private lastAddressCheckResult: Address[] = [];
 
-  mapAddress(address: Address, variant: AddressDoctorVariant): Address {
-    let city = '';
-
-    for (const locality of variant.AddressElements.Locality) {
-      city += ` ${locality.Value}`;
+  checkAddress(address: Address): Observable<Address[]> {
+    if (isEqual(address, this.lastAddressCheck)) {
+      return of(this.lastAddressCheckResult);
     }
 
-    return {
-      ...address,
-      addressLine1: `${variant.AddressElements.Street ? variant.AddressElements.Street[0].Value : ''} ${
-        variant.AddressElements.HouseNumber ? variant.AddressElements.HouseNumber[0].Value : ''
-      }`,
-      postalCode: variant.AddressElements.PostalCode ? variant.AddressElements.PostalCode[0].Value : '',
-      city,
-      mainDivision: variant.AddressElements.AdministrativeDivision
-        ? variant.AddressElements.AdministrativeDivision[0].Value
-        : '',
-    };
+    this.lastAddressCheck = address;
+    return race(
+      this.addressDoctorService.postAddress(address).pipe(
+        tap(result => {
+          this.lastAddressCheckResult = result;
+        })
+      ),
+      // if the address check takes longer than 5 seconds return with no suggestions
+      timer(5000).pipe(map(() => []))
+    );
   }
 }

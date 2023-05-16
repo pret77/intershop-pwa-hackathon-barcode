@@ -6,7 +6,6 @@ import { NgbCollapse } from '@ng-bootstrap/ng-bootstrap';
 import { TranslateModule } from '@ngx-translate/core';
 import { MockComponent, MockDirective } from 'ng-mocks';
 import { EMPTY, of } from 'rxjs';
-import { LazyAddressDoctorComponent } from 'src/app/extensions/address-doctor/exports/lazy-address-doctor/lazy-address-doctor.component';
 import { anything, instance, mock, verify, when } from 'ts-mockito';
 
 import { AccountFacade } from 'ish-core/facades/account.facade';
@@ -17,6 +16,8 @@ import { findAllCustomElements, findAllDataTestingIDs } from 'ish-core/utils/dev
 import { AddressComponent } from 'ish-shared/components/address/address/address.component';
 import { FormlyCustomerAddressFormComponent } from 'ish-shared/formly-address-forms/components/formly-customer-address-form/formly-customer-address-form.component';
 import { FormlyTestingModule } from 'ish-shared/formly/dev/testing/formly-testing.module';
+
+import { LazyAddressDoctorComponent } from '../../../../extensions/address-doctor/exports/lazy-address-doctor/lazy-address-doctor.component';
 
 import { BasketInvoiceAddressWidgetComponent } from './basket-invoice-address-widget.component';
 
@@ -95,6 +96,7 @@ describe('Basket Invoice Address Widget Component', () => {
           "fa-icon",
           "ish-address",
           "ish-formly-customer-address-form",
+          "ish-lazy-address-doctor",
         ]
       `);
       expect(findAllDataTestingIDs(fixture)).toMatchInlineSnapshot(`

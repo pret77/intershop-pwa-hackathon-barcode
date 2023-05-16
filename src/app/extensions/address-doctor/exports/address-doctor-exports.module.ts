@@ -8,6 +8,5 @@ import { LazyAddressDoctorComponent } from './lazy-address-doctor/lazy-address-d
   imports: [CommonModule, TranslateModule],
   declarations: [LazyAddressDoctorComponent],
   exports: [LazyAddressDoctorComponent],
-  providers: [],
 })
 export class AddressDoctorExportsModule {}

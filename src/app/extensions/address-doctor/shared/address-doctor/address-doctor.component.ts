@@ -1,30 +1,17 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  Input,
-  OnDestroy,
-  Output,
-  TemplateRef,
-  ViewChild,
-} from '@angular/core';
-import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
-import { Observable, Subject, takeUntil } from 'rxjs';
+import { AfterViewInit, ChangeDetectionStrategy, Component, Input, OnDestroy, ViewChild, inject } from '@angular/core';
+import { Subject, filter, map, takeUntil, tap } from 'rxjs';
+import { concatMap, first } from 'rxjs/operators';
 
-import { AccountFacade } from 'ish-core/facades/account.facade';
-import { CheckoutFacade } from 'ish-core/facades/checkout.facade';
 import { Address } from 'ish-core/models/address/address.model';
+import { FeatureEventService } from 'ish-core/utils/feature-event/feature-event.service';
 import { GenerateLazyComponent } from 'ish-core/utils/module-loader/generate-lazy-component.decorator';
+import { whenPropertyHasValue } from 'ish-core/utils/operators';
+import { ModalOptions } from 'ish-shared/components/common/modal-dialog/modal-dialog.component';
 
 import { AddressDoctorFacade } from '../../facades/address-doctor.facade';
-
-export type AddressDoctorPageVariant =
-  | 'register'
-  | 'account-create'
-  | 'account-update'
-  | 'checkout-invoice-create'
-  | 'checkout-shipping-create'
-  | 'checkout-update';
+import { AddressDoctorEvents } from '../../models/address-doctor/address-doctor-event.model';
+import { AddressDoctorHelper } from '../../models/address-doctor/address-doctor.helper';
+import { AddressDoctorModalComponent } from '../address-doctor-modal/address-doctor-modal.component';
 
 @Component({
   selector: 'ish-address-doctor',
@@ -32,82 +19,77 @@ export type AddressDoctorPageVariant =
   changeDetection: ChangeDetectionStrategy.Default,
 })
 @GenerateLazyComponent()
-export class AddressDoctorComponent implements OnDestroy {
-  @Input() size: string = undefined;
-  @Output() register = new EventEmitter<Address>();
-  @ViewChild('template', { static: true }) modalDialogTemplate: TemplateRef<unknown>;
+export class AddressDoctorComponent implements OnDestroy, AfterViewInit {
+  @Input() options: ModalOptions;
+  // related address doctor modal
+  @ViewChild('modal') modal: AddressDoctorModalComponent;
 
-  ngbModalRef: NgbModalRef;
-  suggestions$: Observable<Address[]>;
-  address: Address;
-  newAddress: Address;
+  private featureEventService = inject(FeatureEventService);
+  private addressDoctorFacade = inject(AddressDoctorFacade);
 
-  private addressDoctorPageVariant: AddressDoctorPageVariant;
+  private eventId: string;
   private destroy$ = new Subject<void>();
 
-  constructor(
-    private ngbModal: NgbModal,
-    private accountFacade: AccountFacade,
-    private checkoutFacade: CheckoutFacade,
-    private addressDoctorFacade: AddressDoctorFacade
-  ) {}
-
-  open() {
-    const size = this.size;
-    this.ngbModalRef = this.ngbModal.open(this.modalDialogTemplate, { size });
-    this.ngbModalRef.dismissed.pipe(takeUntil(this.destroy$)).subscribe(() => {
-      this.sendAddress(this.address);
-    });
+  ngAfterViewInit(): void {
+    // react on all CheckAddress event notifier for 'addressDoctor' feature
+    this.featureEventService.eventNotifier$
+      .pipe(
+        filter(({ event }) => event === AddressDoctorEvents.CheckAddress),
+        whenPropertyHasValue('feature', 'addressDoctor'),
+        // save notifier id for event result
+        tap(({ id }) => (this.eventId = id)),
+        map(({ data }) => this.mapToAddress(data)),
+        concatMap(address =>
+          this.addressDoctorFacade.checkAddress(address).pipe(
+            first(),
+            map(suggestions => ({ address, suggestions }))
+          )
+        ),
+        takeUntil(this.destroy$)
+      )
+      // open related address doctor modal with event notifier address data
+      .subscribe(({ address, suggestions }) => {
+        if (
+          suggestions?.length &&
+          !suggestions.find(suggestion => AddressDoctorHelper.equalityCheck(address, suggestion))
+        ) {
+          this.modal.openModal(address, suggestions);
+        } else {
+          this.sendAddress(address);
+        }
+      });
   }
 
-  hide() {
-    this.sendAddress(this.address);
-    this.ngbModalRef.close();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private mapToAddress(data: any): Address {
+    if (this.isCheckAddressOptions(data)) {
+      const { address } = data;
+      return address;
+    }
+    return;
   }
 
-  confirm() {
-    this.ngbModalRef.close();
-    this.sendAddress(this.newAddress);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private isCheckAddressOptions(object: any): object is {
+    address: Address;
+  } {
+    return 'address' in object;
   }
 
-  change(address: Address) {
-    this.newAddress = address;
-  }
-
-  checkAddress(address: Address, addressDoctorPageVariant: AddressDoctorPageVariant) {
-    this.address = address;
-    this.newAddress = address;
-    this.addressDoctorPageVariant = addressDoctorPageVariant;
-    this.suggestions$ = this.addressDoctorFacade.checkAddress(address);
-    this.open();
-  }
-
+  /**
+   * Send event result for given address
+   * @param address address callback
+   */
   sendAddress(address: Address) {
-    switch (this.addressDoctorPageVariant) {
-      case 'register': {
-        this.register.emit(this.newAddress);
-        break;
-      }
-      case 'account-create': {
-        this.accountFacade.createCustomerAddress(address);
-        break;
-      }
-      case 'account-update': {
-        this.accountFacade.updateCustomerAddress(address);
-        break;
-      }
-      case 'checkout-invoice-create': {
-        this.checkoutFacade.createBasketAddress(address, 'invoice');
-        break;
-      }
-      case 'checkout-shipping-create': {
-        this.checkoutFacade.createBasketAddress(address, 'shipping');
-        break;
-      }
-      case 'checkout-update': {
-        this.checkoutFacade.updateBasketAddress(address);
-        break;
-      }
+    this.featureEventService.sendResult(this.eventId, AddressDoctorEvents.CheckAddressSuccess, true, address);
+  }
+
+  /**
+   * Send event result when modal component was cancelled
+   */
+  onModalHidden(hidden: boolean) {
+    if (hidden) {
+      this.featureEventService.sendResult(this.eventId, AddressDoctorEvents.CheckAddressCancelled, true);
     }
   }
 
