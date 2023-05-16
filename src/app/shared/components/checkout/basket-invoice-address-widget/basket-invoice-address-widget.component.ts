@@ -3,6 +3,7 @@ import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { FormlyFieldConfig } from '@ngx-formly/core';
 import { BehaviorSubject, Observable, Subject, combineLatest } from 'rxjs';
 import { filter, map, shareReplay, take, takeUntil } from 'rxjs/operators';
+import { AddressDoctorNotifierService } from 'src/app/extensions/address-doctor/exports/address-doctor-notifier/address-doctor-notifier.service';
 import { LazyAddressDoctorComponent } from 'src/app/extensions/address-doctor/exports/lazy-address-doctor/lazy-address-doctor.component';
 
 import { AccountFacade } from 'ish-core/facades/account.facade';
@@ -49,7 +50,8 @@ export class BasketInvoiceAddressWidgetComponent implements OnInit, OnDestroy {
   constructor(
     private checkoutFacade: CheckoutFacade,
     private accountFacade: AccountFacade,
-    private featureToggleService: FeatureToggleService
+    private featureToggleService: FeatureToggleService,
+    private addressDoctorNotifier: AddressDoctorNotifierService
   ) {}
 
   ngOnInit() {
@@ -129,14 +131,14 @@ export class BasketInvoiceAddressWidgetComponent implements OnInit, OnDestroy {
   saveAddress(address: Address) {
     if (this.editAddress && Object.keys(this.editAddress).length > 0) {
       if (this.featureToggleService.enabled('addressDoctor')) {
-        this.addressDoctorComponent.checkAddress(address, 'checkout-update');
+        this.addressDoctorNotifier.updateCheckAddressNotifier(address, 'checkout-invoice-create');
       } else {
         this.checkoutFacade.updateBasketAddress(address);
       }
       this.collapse = true;
     } else {
       if (this.featureToggleService.enabled('addressDoctor')) {
-        this.addressDoctorComponent.checkAddress(address, 'checkout-invoice-create');
+        this.addressDoctorNotifier.updateCheckAddressNotifier(address, 'checkout-invoice-create');
       } else {
         this.checkoutFacade.createBasketAddress(address, 'invoice');
         (this.form.get('id') as UntypedFormControl).setValue('', { emitEvent: false });

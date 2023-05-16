@@ -3,6 +3,7 @@ import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { FormlyFieldConfig } from '@ngx-formly/core/lib/core';
 import { BehaviorSubject, Observable, Subject, combineLatest } from 'rxjs';
 import { filter, map, shareReplay, take, takeUntil } from 'rxjs/operators';
+import { AddressDoctorNotifierService } from 'src/app/extensions/address-doctor/exports/address-doctor-notifier/address-doctor-notifier.service';
 import { LazyAddressDoctorComponent } from 'src/app/extensions/address-doctor/exports/lazy-address-doctor/lazy-address-doctor.component';
 
 import { AccountFacade } from 'ish-core/facades/account.facade';
@@ -53,7 +54,8 @@ export class BasketShippingAddressWidgetComponent implements OnInit, OnDestroy {
   constructor(
     private accountFacade: AccountFacade,
     private checkoutFacade: CheckoutFacade,
-    private featureToggleService: FeatureToggleService
+    private featureToggleService: FeatureToggleService,
+    private addressDoctorNotifier: AddressDoctorNotifierService
   ) {
     this.form = new UntypedFormGroup({
       id: new UntypedFormControl(''),
@@ -144,14 +146,14 @@ export class BasketShippingAddressWidgetComponent implements OnInit, OnDestroy {
   saveAddress(address: Address) {
     if (this.editAddress && Object.keys(this.editAddress).length > 0) {
       if (this.featureToggleService.enabled('addressDoctor')) {
-        this.addressDoctorComponent.checkAddress(address, 'checkout-update');
+        this.addressDoctorNotifier.updateCheckAddressNotifier(address, 'checkout-update');
       } else {
         this.checkoutFacade.updateBasketAddress(address);
       }
       this.collapse = true;
     } else {
       if (this.featureToggleService.enabled('addressDoctor')) {
-        this.addressDoctorComponent.checkAddress(address, 'checkout-shipping-create');
+        this.addressDoctorNotifier.updateCheckAddressNotifier(address, 'checkout-shipping-create');
       } else {
         this.checkoutFacade.createBasketAddress(address, 'shipping');
       }

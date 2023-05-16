@@ -4,6 +4,7 @@ import { AbstractControl, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { FormlyFieldConfig, FormlyFormOptions } from '@ngx-formly/core';
 import { Observable, tap } from 'rxjs';
+import { AddressDoctorNotifierService } from 'src/app/extensions/address-doctor/exports/address-doctor-notifier/address-doctor-notifier.service';
 import { LazyAddressDoctorComponent } from 'src/app/extensions/address-doctor/exports/lazy-address-doctor/lazy-address-doctor.component';
 
 import { AccountFacade } from 'ish-core/facades/account.facade';
@@ -35,7 +36,8 @@ export class RegistrationPageComponent implements OnInit {
     private route: ActivatedRoute,
     private registrationFormConfiguration: RegistrationFormConfigurationService,
     private accountFacade: AccountFacade,
-    private featureToggleService: FeatureToggleService
+    private featureToggleService: FeatureToggleService,
+    private addressDoctorNotifier: AddressDoctorNotifierService
   ) {}
 
   submitted = false;
@@ -74,7 +76,7 @@ export class RegistrationPageComponent implements OnInit {
     }
     // keep-localization-pattern: ^customer\..*\.error$
     if (this.featureToggleService.enabled('addressDoctor')) {
-      this.addressDoctorComponent.checkAddress(this.form.get('address').value, 'register');
+      this.addressDoctorNotifier.updateCheckAddressNotifier(this.form.get('address').value, 'register');
     } else {
       this.submitRegistrationForm();
     }

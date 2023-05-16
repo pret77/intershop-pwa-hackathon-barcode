@@ -3,6 +3,7 @@ import { FormGroup } from '@angular/forms';
 import { FormlyFieldConfig } from '@ngx-formly/core';
 import { Observable, Subject, combineLatest } from 'rxjs';
 import { distinctUntilChanged, filter, map, shareReplay, takeUntil, withLatestFrom } from 'rxjs/operators';
+import { AddressDoctorNotifierService } from 'src/app/extensions/address-doctor/exports/address-doctor-notifier/address-doctor-notifier.service';
 import { LazyAddressDoctorComponent } from 'src/app/extensions/address-doctor/exports/lazy-address-doctor/lazy-address-doctor.component';
 
 import { AccountFacade } from 'ish-core/facades/account.facade';
@@ -28,7 +29,6 @@ export class AccountAddressesComponent implements OnInit, OnDestroy {
 
   addresses$: Observable<Address[]>;
   user$: Observable<User>;
-
   hasPreferredAddresses = false;
   preferredAddressesEqual: boolean;
   preferredInvoiceToAddress: Address;
@@ -47,7 +47,11 @@ export class AccountAddressesComponent implements OnInit, OnDestroy {
 
   private destroy$ = new Subject<void>();
 
-  constructor(private accountFacade: AccountFacade, private featureToggleService: FeatureToggleService) {}
+  constructor(
+    private accountFacade: AccountFacade,
+    private featureToggleService: FeatureToggleService,
+    private addressDoctorNotifier: AddressDoctorNotifierService
+  ) {}
 
   ngOnInit() {
     this.addresses$ = this.accountFacade.addresses$().pipe(shareReplay(1));
@@ -172,7 +176,7 @@ export class AccountAddressesComponent implements OnInit, OnDestroy {
 
   createAddress(address: Address) {
     if (this.featureToggleService.enabled('addressDoctor')) {
-      this.addressDoctorComponent.checkAddress(address, 'account-create');
+      this.addressDoctorNotifier.updateCheckAddressNotifier(address, 'account-create');
     } else {
       this.accountFacade.createCustomerAddress(address);
     }
@@ -180,7 +184,7 @@ export class AccountAddressesComponent implements OnInit, OnDestroy {
 
   updateAddress(address: Address): void {
     if (this.featureToggleService.enabled('addressDoctor')) {
-      this.addressDoctorComponent.checkAddress(address, 'account-update');
+      this.addressDoctorNotifier.updateCheckAddressNotifier(address, 'account-update');
     } else {
       this.accountFacade.updateCustomerAddress(address);
     }

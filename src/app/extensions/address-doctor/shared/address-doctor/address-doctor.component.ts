@@ -4,6 +4,7 @@ import {
   EventEmitter,
   Input,
   OnDestroy,
+  OnInit,
   Output,
   TemplateRef,
   ViewChild,
@@ -16,6 +17,7 @@ import { CheckoutFacade } from 'ish-core/facades/checkout.facade';
 import { Address } from 'ish-core/models/address/address.model';
 import { GenerateLazyComponent } from 'ish-core/utils/module-loader/generate-lazy-component.decorator';
 
+import { AddressDoctorNotifierService } from '../../exports/address-doctor-notifier/address-doctor-notifier.service';
 import { AddressDoctorFacade } from '../../facades/address-doctor.facade';
 
 export type AddressDoctorPageVariant =
@@ -32,14 +34,14 @@ export type AddressDoctorPageVariant =
   changeDetection: ChangeDetectionStrategy.Default,
 })
 @GenerateLazyComponent()
-export class AddressDoctorComponent implements OnDestroy {
+export class AddressDoctorComponent implements OnInit, OnDestroy {
   @Input() size: string = undefined;
   @Output() register = new EventEmitter<Address>();
   @ViewChild('template', { static: true }) modalDialogTemplate: TemplateRef<unknown>;
 
+  address: Address;
   ngbModalRef: NgbModalRef;
   suggestions$: Observable<Address[]>;
-  address: Address;
   newAddress: Address;
 
   private addressDoctorPageVariant: AddressDoctorPageVariant;
@@ -49,8 +51,15 @@ export class AddressDoctorComponent implements OnDestroy {
     private ngbModal: NgbModal,
     private accountFacade: AccountFacade,
     private checkoutFacade: CheckoutFacade,
-    private addressDoctorFacade: AddressDoctorFacade
+    private addressDoctorFacade: AddressDoctorFacade,
+    private addressDoctorNotifier: AddressDoctorNotifierService
   ) {}
+
+  ngOnInit(): void {
+    this.addressDoctorNotifier.checkAddressNotifier$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(({ address, pageVariant }) => this.checkAddress(address, pageVariant));
+  }
 
   open() {
     const size = this.size;
@@ -74,10 +83,10 @@ export class AddressDoctorComponent implements OnDestroy {
     this.newAddress = address;
   }
 
-  checkAddress(address: Address, addressDoctorPageVariant: AddressDoctorPageVariant) {
+  checkAddress(address: Address, pageVariant: AddressDoctorPageVariant) {
     this.address = address;
     this.newAddress = address;
-    this.addressDoctorPageVariant = addressDoctorPageVariant;
+    this.addressDoctorPageVariant = pageVariant;
     this.suggestions$ = this.addressDoctorFacade.checkAddress(address);
     this.open();
   }
