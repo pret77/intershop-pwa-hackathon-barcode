@@ -1,16 +1,15 @@
 /* eslint-disable ish-custom-rules/no-intelligence-in-artifacts */
-import { ChangeDetectionStrategy, Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { AbstractControl, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { FormlyFieldConfig, FormlyFormOptions } from '@ngx-formly/core';
 import { Observable, tap } from 'rxjs';
-import { AddressDoctorNotifierService } from 'src/app/extensions/address-doctor/exports/address-doctor-notifier/address-doctor-notifier.service';
-import { LazyAddressDoctorComponent } from 'src/app/extensions/address-doctor/exports/lazy-address-doctor/lazy-address-doctor.component';
 
 import { AccountFacade } from 'ish-core/facades/account.facade';
 import { FeatureToggleService } from 'ish-core/feature-toggle.module';
 import { Address } from 'ish-core/models/address/address.model';
 import { HttpError } from 'ish-core/models/http-error/http-error.model';
+import { FeatureEventNotifierService } from 'ish-core/utils/feature-event-notifier/feature-event-notifier.service';
 import { whenTruthy } from 'ish-core/utils/operators';
 import { markAsDirtyRecursive } from 'ish-shared/forms/utils/form-utils';
 
@@ -30,14 +29,12 @@ import {
 export class RegistrationPageComponent implements OnInit {
   error$: Observable<HttpError>;
 
-  @ViewChild(LazyAddressDoctorComponent) addressDoctorComponent: LazyAddressDoctorComponent;
-
   constructor(
     private route: ActivatedRoute,
     private registrationFormConfiguration: RegistrationFormConfigurationService,
     private accountFacade: AccountFacade,
     private featureToggleService: FeatureToggleService,
-    private addressDoctorNotifier: AddressDoctorNotifierService
+    private featureEventNotifier: FeatureEventNotifierService
   ) {}
 
   submitted = false;
@@ -76,7 +73,10 @@ export class RegistrationPageComponent implements OnInit {
     }
     // keep-localization-pattern: ^customer\..*\.error$
     if (this.featureToggleService.enabled('addressDoctor')) {
-      this.addressDoctorNotifier.updateCheckAddressNotifier(this.form.get('address').value, 'register');
+      this.featureEventNotifier.sendNotification('addressDoctor', 'check-address', {
+        address: this.form.get('address').value,
+        pageVariant: 'register',
+      });
     } else {
       this.submitRegistrationForm();
     }

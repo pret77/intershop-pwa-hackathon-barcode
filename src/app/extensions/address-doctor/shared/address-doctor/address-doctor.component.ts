@@ -10,14 +10,15 @@ import {
   ViewChild,
 } from '@angular/core';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
-import { Observable, Subject, takeUntil } from 'rxjs';
+import { Observable, Subject, takeUntil, throwError } from 'rxjs';
 
 import { AccountFacade } from 'ish-core/facades/account.facade';
 import { CheckoutFacade } from 'ish-core/facades/checkout.facade';
 import { Address } from 'ish-core/models/address/address.model';
+import { FeatureEventNotifierService } from 'ish-core/utils/feature-event-notifier/feature-event-notifier.service';
 import { GenerateLazyComponent } from 'ish-core/utils/module-loader/generate-lazy-component.decorator';
+import { whenPropertyHasValue } from 'ish-core/utils/operators';
 
-import { AddressDoctorNotifierService } from '../../exports/address-doctor-notifier/address-doctor-notifier.service';
 import { AddressDoctorFacade } from '../../facades/address-doctor.facade';
 
 export type AddressDoctorPageVariant =
@@ -27,6 +28,11 @@ export type AddressDoctorPageVariant =
   | 'checkout-invoice-create'
   | 'checkout-shipping-create'
   | 'checkout-update';
+
+interface CheckAddressOptions {
+  address: Address;
+  pageVariant: AddressDoctorPageVariant;
+}
 
 @Component({
   selector: 'ish-address-doctor',
@@ -52,13 +58,26 @@ export class AddressDoctorComponent implements OnInit, OnDestroy {
     private accountFacade: AccountFacade,
     private checkoutFacade: CheckoutFacade,
     private addressDoctorFacade: AddressDoctorFacade,
-    private addressDoctorNotifier: AddressDoctorNotifierService
+    private featureEventNotifier: FeatureEventNotifierService
   ) {}
 
   ngOnInit(): void {
-    this.addressDoctorNotifier.checkAddressNotifier$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(({ address, pageVariant }) => this.checkAddress(address, pageVariant));
+    this.featureEventNotifier.eventNotifier$
+      .pipe(whenPropertyHasValue('feature', 'addressDoctor'), takeUntil(this.destroy$))
+      .subscribe(({ event, options }) => {
+        if (event === 'check-address') {
+          if (this.isCheckAddressOptions(options)) {
+            const { address, pageVariant } = options;
+            this.checkAddress(address, pageVariant);
+          } else {
+            throwError(() => 'check-address event has no correct options');
+          }
+        }
+      });
+  }
+
+  private isCheckAddressOptions(object: any): object is CheckAddressOptions {
+    return 'address' in object && 'pageVariant' in object;
   }
 
   open() {

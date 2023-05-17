@@ -1,15 +1,14 @@
-import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { FormlyFieldConfig } from '@ngx-formly/core/lib/core';
 import { BehaviorSubject, Observable, Subject, combineLatest } from 'rxjs';
 import { filter, map, shareReplay, take, takeUntil } from 'rxjs/operators';
-import { AddressDoctorNotifierService } from 'src/app/extensions/address-doctor/exports/address-doctor-notifier/address-doctor-notifier.service';
-import { LazyAddressDoctorComponent } from 'src/app/extensions/address-doctor/exports/lazy-address-doctor/lazy-address-doctor.component';
 
 import { AccountFacade } from 'ish-core/facades/account.facade';
 import { CheckoutFacade } from 'ish-core/facades/checkout.facade';
 import { FeatureToggleService } from 'ish-core/feature-toggle.module';
 import { Address } from 'ish-core/models/address/address.model';
+import { FeatureEventNotifierService } from 'ish-core/utils/feature-event-notifier/feature-event-notifier.service';
 import { whenTruthy } from 'ish-core/utils/operators';
 import { FormsService } from 'ish-shared/forms/utils/forms.service';
 
@@ -47,15 +46,13 @@ export class BasketShippingAddressWidgetComponent implements OnInit, OnDestroy {
   editAddress: Partial<Address>;
   emptyOptionLabel = 'checkout.addresses.select_shipping_address.button';
 
-  @ViewChild(LazyAddressDoctorComponent) addressDoctorComponent: LazyAddressDoctorComponent;
-
   private destroy$ = new Subject<void>();
 
   constructor(
     private accountFacade: AccountFacade,
     private checkoutFacade: CheckoutFacade,
     private featureToggleService: FeatureToggleService,
-    private addressDoctorNotifier: AddressDoctorNotifierService
+    private featureEventNotifier: FeatureEventNotifierService
   ) {
     this.form = new UntypedFormGroup({
       id: new UntypedFormControl(''),
@@ -146,14 +143,20 @@ export class BasketShippingAddressWidgetComponent implements OnInit, OnDestroy {
   saveAddress(address: Address) {
     if (this.editAddress && Object.keys(this.editAddress).length > 0) {
       if (this.featureToggleService.enabled('addressDoctor')) {
-        this.addressDoctorNotifier.updateCheckAddressNotifier(address, 'checkout-update');
+        this.featureEventNotifier.sendNotification('addressDoctor', 'check-address', {
+          address,
+          pageVariant: 'checkout-update',
+        });
       } else {
         this.checkoutFacade.updateBasketAddress(address);
       }
       this.collapse = true;
     } else {
       if (this.featureToggleService.enabled('addressDoctor')) {
-        this.addressDoctorNotifier.updateCheckAddressNotifier(address, 'checkout-shipping-create');
+        this.featureEventNotifier.sendNotification('addressDoctor', 'check-address', {
+          address,
+          pageVariant: 'checkout-shipping-create',
+        });
       } else {
         this.checkoutFacade.createBasketAddress(address, 'shipping');
       }
