@@ -128,28 +128,58 @@ export class BasketInvoiceAddressWidgetComponent implements OnInit, OnDestroy {
   saveAddress(address: Address) {
     if (this.editAddress && Object.keys(this.editAddress).length > 0) {
       if (this.featureToggleService.enabled('addressDoctor')) {
-        this.featureEventNotifier.sendNotification('addressDoctor', 'check-address', {
+        const id = this.featureEventNotifier.sendNotification('addressDoctor', 'check-address', {
           address,
           pageVariant: 'checkout-invoice-create',
         });
+
+        this.listenForCheckAddressResult$(id)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe(({ data }) => {
+            if (data) {
+              this.checkoutFacade.updateBasketAddress(data);
+            }
+          });
       } else {
         this.checkoutFacade.updateBasketAddress(address);
       }
       this.collapse = true;
     } else {
       if (this.featureToggleService.enabled('addressDoctor')) {
-        this.featureEventNotifier.sendNotification('addressDoctor', 'check-address', {
+        const id = this.featureEventNotifier.sendNotification('addressDoctor', 'check-address', {
           address,
           pageVariant: 'checkout-invoice-create',
         });
+
+        this.listenForCheckAddressResult$(id)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe(({ data }) => {
+            if (data) {
+              this.checkoutFacade.createBasketAddress(data, 'invoice');
+            }
+          });
       } else {
         this.checkoutFacade.createBasketAddress(address, 'invoice');
-        (this.form.get('id') as UntypedFormControl).setValue('', { emitEvent: false });
       }
+      (this.form.get('id') as UntypedFormControl).setValue('', { emitEvent: false });
     }
   }
 
   cancelEditAddress() {
     this.collapse = true;
+  }
+
+  private listenForCheckAddressResult$(id: string) {
+    return this.featureEventNotifier.eventResults$.pipe(
+      whenTruthy(),
+      filter(result => result.id === id && result.event === 'check-address-successful' && result.successful),
+      take(1),
+      takeUntil(
+        this.featureEventNotifier.eventResults$.pipe(
+          whenTruthy(),
+          filter(result => result.id === id && result.event === 'check-address-cancellation')
+        )
+      )
+    );
   }
 }

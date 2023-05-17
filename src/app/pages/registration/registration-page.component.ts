@@ -1,9 +1,9 @@
 /* eslint-disable ish-custom-rules/no-intelligence-in-artifacts */
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { FormlyFieldConfig, FormlyFormOptions } from '@ngx-formly/core';
-import { Observable, tap } from 'rxjs';
+import { Observable, Subject, filter, take, takeUntil, tap } from 'rxjs';
 
 import { AccountFacade } from 'ish-core/facades/account.facade';
 import { FeatureToggleService } from 'ish-core/feature-toggle.module';
@@ -26,7 +26,7 @@ import {
   templateUrl: './registration-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RegistrationPageComponent implements OnInit {
+export class RegistrationPageComponent implements OnInit, OnDestroy {
   error$: Observable<HttpError>;
 
   constructor(
@@ -46,6 +46,8 @@ export class RegistrationPageComponent implements OnInit {
   model: Record<string, unknown>;
   options: FormlyFormOptions;
   form = new UntypedFormGroup({});
+
+  private destroy$ = new Subject<void>();
 
   ngOnInit() {
     this.error$ = this.registrationFormConfiguration.getErrorSources().pipe(
@@ -73,10 +75,20 @@ export class RegistrationPageComponent implements OnInit {
     }
     // keep-localization-pattern: ^customer\..*\.error$
     if (this.featureToggleService.enabled('addressDoctor')) {
-      this.featureEventNotifier.sendNotification('addressDoctor', 'check-address', {
+      const id = this.featureEventNotifier.sendNotification('addressDoctor', 'check-address', {
         address: this.form.get('address').value,
         pageVariant: 'register',
       });
+
+      this.listenForCheckAddressResult$(id)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe(({ data }) => {
+          if (data) {
+            // TODO: Needs to be adapted to submit new address form value
+            this.form.value.address = data;
+            this.submitRegistrationForm();
+          }
+        });
     } else {
       this.submitRegistrationForm();
     }
@@ -103,5 +115,24 @@ export class RegistrationPageComponent implements OnInit {
 
   private clearCaptchaToken() {
     this.form.get('captcha')?.setValue(undefined);
+  }
+
+  private listenForCheckAddressResult$(id: string) {
+    return this.featureEventNotifier.eventResults$.pipe(
+      whenTruthy(),
+      filter(result => result.id === id && result.event === 'check-address-successful' && result.successful),
+      take(1),
+      takeUntil(
+        this.featureEventNotifier.eventResults$.pipe(
+          whenTruthy(),
+          filter(result => result.id === id && result.event === 'check-address-cancellation')
+        )
+      )
+    );
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

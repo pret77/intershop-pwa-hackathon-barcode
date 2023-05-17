@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit } from '@a
 import { FormGroup } from '@angular/forms';
 import { FormlyFieldConfig } from '@ngx-formly/core';
 import { Observable, Subject, combineLatest } from 'rxjs';
-import { distinctUntilChanged, filter, map, shareReplay, takeUntil, withLatestFrom } from 'rxjs/operators';
+import { distinctUntilChanged, filter, map, shareReplay, take, takeUntil, withLatestFrom } from 'rxjs/operators';
 
 import { AccountFacade } from 'ish-core/facades/account.facade';
 import { FeatureToggleService } from 'ish-core/feature-toggle.module';
@@ -173,10 +173,18 @@ export class AccountAddressesComponent implements OnInit, OnDestroy {
 
   createAddress(address: Address) {
     if (this.featureToggleService.enabled('addressDoctor')) {
-      this.featureEventNotifier.sendNotification('addressDoctor', 'check-address', {
+      const id = this.featureEventNotifier.sendNotification('addressDoctor', 'check-address', {
         address,
         pageVariant: 'account-create',
       });
+
+      this.listenForCheckAddressResult$(id)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe(({ data }) => {
+          if (data) {
+            this.accountFacade.createCustomerAddress(data);
+          }
+        });
     } else {
       this.accountFacade.createCustomerAddress(address);
     }
@@ -184,10 +192,18 @@ export class AccountAddressesComponent implements OnInit, OnDestroy {
 
   updateAddress(address: Address): void {
     if (this.featureToggleService.enabled('addressDoctor')) {
-      this.featureEventNotifier.sendNotification('addressDoctor', 'check-address', {
+      const id = this.featureEventNotifier.sendNotification('addressDoctor', 'check-address', {
         address,
         pageVariant: 'account-update',
       });
+
+      this.listenForCheckAddressResult$(id)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe(({ data }) => {
+          if (data) {
+            this.accountFacade.updateCustomerAddress(data);
+          }
+        });
     } else {
       this.accountFacade.updateCustomerAddress(address);
     }
@@ -210,6 +226,20 @@ export class AccountAddressesComponent implements OnInit, OnDestroy {
       (address: Address) =>
         (!user.preferredInvoiceToAddressUrn || address.urn !== user.preferredInvoiceToAddressUrn) &&
         (!user.preferredShipToAddressUrn || address.urn !== user.preferredShipToAddressUrn)
+    );
+  }
+
+  private listenForCheckAddressResult$(id: string) {
+    return this.featureEventNotifier.eventResults$.pipe(
+      whenTruthy(),
+      filter(result => result.id === id && result.event === 'check-address-successful' && result.successful),
+      take(1),
+      takeUntil(
+        this.featureEventNotifier.eventResults$.pipe(
+          whenTruthy(),
+          filter(result => result.id === id && result.event === 'check-address-cancellation')
+        )
+      )
     );
   }
 
