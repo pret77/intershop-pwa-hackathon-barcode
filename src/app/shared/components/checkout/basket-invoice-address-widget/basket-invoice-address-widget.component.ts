@@ -130,7 +130,6 @@ export class BasketInvoiceAddressWidgetComponent implements OnInit, OnDestroy {
       if (this.featureToggleService.enabled('addressDoctor')) {
         const id = this.featureEventService.sendNotification('addressDoctor', 'check-address', {
           address,
-          pageVariant: 'checkout-invoice-create',
         });
 
         this.featureEventService
@@ -149,7 +148,6 @@ export class BasketInvoiceAddressWidgetComponent implements OnInit, OnDestroy {
       if (this.featureToggleService.enabled('addressDoctor')) {
         const id = this.featureEventService.sendNotification('addressDoctor', 'check-address', {
           address,
-          pageVariant: 'checkout-invoice-create',
         });
 
         this.featureEventService

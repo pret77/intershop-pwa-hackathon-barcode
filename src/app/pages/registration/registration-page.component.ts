@@ -77,7 +77,6 @@ export class RegistrationPageComponent implements OnInit, OnDestroy {
     if (this.featureToggleService.enabled('addressDoctor')) {
       const id = this.featureEventService.sendNotification('addressDoctor', 'check-address', {
         address: this.form.get('address').value,
-        pageVariant: 'register',
       });
 
       this.featureEventService
