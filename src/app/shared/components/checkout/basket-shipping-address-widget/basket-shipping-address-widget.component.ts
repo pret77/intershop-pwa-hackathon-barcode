@@ -8,7 +8,7 @@ import { AccountFacade } from 'ish-core/facades/account.facade';
 import { CheckoutFacade } from 'ish-core/facades/checkout.facade';
 import { FeatureToggleService } from 'ish-core/feature-toggle.module';
 import { Address } from 'ish-core/models/address/address.model';
-import { FeatureEventNotifierService } from 'ish-core/utils/feature-event-notifier/feature-event-notifier.service';
+import { FeatureEventService } from 'ish-core/utils/feature-event-notifier/feature-event-notifier.service';
 import { whenTruthy } from 'ish-core/utils/operators';
 import { FormsService } from 'ish-shared/forms/utils/forms.service';
 
@@ -52,7 +52,7 @@ export class BasketShippingAddressWidgetComponent implements OnInit, OnDestroy {
     private accountFacade: AccountFacade,
     private checkoutFacade: CheckoutFacade,
     private featureToggleService: FeatureToggleService,
-    private featureEventNotifier: FeatureEventNotifierService
+    private featureEventService: FeatureEventService
   ) {
     this.form = new UntypedFormGroup({
       id: new UntypedFormControl(''),
@@ -143,13 +143,14 @@ export class BasketShippingAddressWidgetComponent implements OnInit, OnDestroy {
   saveAddress(address: Address) {
     if (this.editAddress && Object.keys(this.editAddress).length > 0) {
       if (this.featureToggleService.enabled('addressDoctor')) {
-        const id = this.featureEventNotifier.sendNotification('addressDoctor', 'check-address', {
+        const id = this.featureEventService.sendNotification('addressDoctor', 'check-address', {
           address,
           pageVariant: 'checkout-update',
         });
 
-        this.listenForCheckAddressResult$(id)
-          .pipe(takeUntil(this.destroy$))
+        this.featureEventService
+          .eventResultListener$('addressDoctor', 'check-address', id)
+          .pipe(whenTruthy(), take(1), takeUntil(this.destroy$))
           .subscribe(({ data }) => {
             if (data) {
               this.checkoutFacade.updateBasketAddress(data);
@@ -161,13 +162,14 @@ export class BasketShippingAddressWidgetComponent implements OnInit, OnDestroy {
       this.collapse = true;
     } else {
       if (this.featureToggleService.enabled('addressDoctor')) {
-        const id = this.featureEventNotifier.sendNotification('addressDoctor', 'check-address', {
+        const id = this.featureEventService.sendNotification('addressDoctor', 'check-address', {
           address,
           pageVariant: 'checkout-shipping-create',
         });
 
-        this.listenForCheckAddressResult$(id)
-          .pipe(takeUntil(this.destroy$))
+        this.featureEventService
+          .eventResultListener$('addressDoctor', 'check-address', id)
+          .pipe(whenTruthy(), take(1), takeUntil(this.destroy$))
           .subscribe(({ data }) => {
             if (data) {
               this.checkoutFacade.createBasketAddress(data, 'shipping');
@@ -186,19 +188,5 @@ export class BasketShippingAddressWidgetComponent implements OnInit, OnDestroy {
 
   deleteAddress(address: Address) {
     this.checkoutFacade.deleteBasketAddress(address.id);
-  }
-
-  private listenForCheckAddressResult$(id: string) {
-    return this.featureEventNotifier.eventResults$.pipe(
-      whenTruthy(),
-      filter(result => result.id === id && result.event === 'check-address-successful' && result.successful),
-      take(1),
-      takeUntil(
-        this.featureEventNotifier.eventResults$.pipe(
-          whenTruthy(),
-          filter(result => result.id === id && result.event === 'check-address-cancellation')
-        )
-      )
-    );
   }
 }

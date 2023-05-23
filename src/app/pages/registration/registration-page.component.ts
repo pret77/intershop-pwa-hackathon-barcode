@@ -3,13 +3,13 @@ import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/
 import { AbstractControl, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { FormlyFieldConfig, FormlyFormOptions } from '@ngx-formly/core';
-import { Observable, Subject, filter, take, takeUntil, tap } from 'rxjs';
+import { Observable, Subject, take, takeUntil, tap } from 'rxjs';
 
 import { AccountFacade } from 'ish-core/facades/account.facade';
 import { FeatureToggleService } from 'ish-core/feature-toggle.module';
 import { Address } from 'ish-core/models/address/address.model';
 import { HttpError } from 'ish-core/models/http-error/http-error.model';
-import { FeatureEventNotifierService } from 'ish-core/utils/feature-event-notifier/feature-event-notifier.service';
+import { FeatureEventService } from 'ish-core/utils/feature-event-notifier/feature-event-notifier.service';
 import { whenTruthy } from 'ish-core/utils/operators';
 import { markAsDirtyRecursive } from 'ish-shared/forms/utils/form-utils';
 
@@ -34,7 +34,7 @@ export class RegistrationPageComponent implements OnInit, OnDestroy {
     private registrationFormConfiguration: RegistrationFormConfigurationService,
     private accountFacade: AccountFacade,
     private featureToggleService: FeatureToggleService,
-    private featureEventNotifier: FeatureEventNotifierService
+    private featureEventService: FeatureEventService
   ) {}
 
   submitted = false;
@@ -75,13 +75,14 @@ export class RegistrationPageComponent implements OnInit, OnDestroy {
     }
     // keep-localization-pattern: ^customer\..*\.error$
     if (this.featureToggleService.enabled('addressDoctor')) {
-      const id = this.featureEventNotifier.sendNotification('addressDoctor', 'check-address', {
+      const id = this.featureEventService.sendNotification('addressDoctor', 'check-address', {
         address: this.form.get('address').value,
         pageVariant: 'register',
       });
 
-      this.listenForCheckAddressResult$(id)
-        .pipe(takeUntil(this.destroy$))
+      this.featureEventService
+        .eventResultListener$('addressDoctor', 'check-address', id)
+        .pipe(whenTruthy(), take(1), takeUntil(this.destroy$))
         .subscribe(({ data }) => {
           if (data) {
             // TODO: Needs to be adapted to submit new address form value
@@ -115,20 +116,6 @@ export class RegistrationPageComponent implements OnInit, OnDestroy {
 
   private clearCaptchaToken() {
     this.form.get('captcha')?.setValue(undefined);
-  }
-
-  private listenForCheckAddressResult$(id: string) {
-    return this.featureEventNotifier.eventResults$.pipe(
-      whenTruthy(),
-      filter(result => result.id === id && result.event === 'check-address-successful' && result.successful),
-      take(1),
-      takeUntil(
-        this.featureEventNotifier.eventResults$.pipe(
-          whenTruthy(),
-          filter(result => result.id === id && result.event === 'check-address-cancellation')
-        )
-      )
-    );
   }
 
   ngOnDestroy() {

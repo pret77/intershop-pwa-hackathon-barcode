@@ -10,7 +10,7 @@ import { AddressHelper } from 'ish-core/models/address/address.helper';
 import { Address } from 'ish-core/models/address/address.model';
 import { HttpError } from 'ish-core/models/http-error/http-error.model';
 import { User } from 'ish-core/models/user/user.model';
-import { FeatureEventNotifierService } from 'ish-core/utils/feature-event-notifier/feature-event-notifier.service';
+import { FeatureEventService } from 'ish-core/utils/feature-event-notifier/feature-event-notifier.service';
 import { whenTruthy } from 'ish-core/utils/operators';
 import { mapToAddressOptions } from 'ish-shared/forms/utils/forms.service';
 
@@ -47,7 +47,7 @@ export class AccountAddressesComponent implements OnInit, OnDestroy {
   constructor(
     private accountFacade: AccountFacade,
     private featureToggleService: FeatureToggleService,
-    private featureEventNotifier: FeatureEventNotifierService
+    private featureEventService: FeatureEventService
   ) {}
 
   ngOnInit() {
@@ -173,13 +173,14 @@ export class AccountAddressesComponent implements OnInit, OnDestroy {
 
   createAddress(address: Address) {
     if (this.featureToggleService.enabled('addressDoctor')) {
-      const id = this.featureEventNotifier.sendNotification('addressDoctor', 'check-address', {
+      const id = this.featureEventService.sendNotification('addressDoctor', 'check-address', {
         address,
         pageVariant: 'account-create',
       });
 
-      this.listenForCheckAddressResult$(id)
-        .pipe(takeUntil(this.destroy$))
+      this.featureEventService
+        .eventResultListener$('addressDoctor', 'check-address', id)
+        .pipe(whenTruthy(), take(1), takeUntil(this.destroy$))
         .subscribe(({ data }) => {
           if (data) {
             this.accountFacade.createCustomerAddress(data);
@@ -192,13 +193,14 @@ export class AccountAddressesComponent implements OnInit, OnDestroy {
 
   updateAddress(address: Address): void {
     if (this.featureToggleService.enabled('addressDoctor')) {
-      const id = this.featureEventNotifier.sendNotification('addressDoctor', 'check-address', {
+      const id = this.featureEventService.sendNotification('addressDoctor', 'check-address', {
         address,
         pageVariant: 'account-update',
       });
 
-      this.listenForCheckAddressResult$(id)
-        .pipe(takeUntil(this.destroy$))
+      this.featureEventService
+        .eventResultListener$('addressDoctor', 'check-address', id)
+        .pipe(whenTruthy(), take(1), takeUntil(this.destroy$))
         .subscribe(({ data }) => {
           if (data) {
             this.accountFacade.updateCustomerAddress(data);
@@ -226,20 +228,6 @@ export class AccountAddressesComponent implements OnInit, OnDestroy {
       (address: Address) =>
         (!user.preferredInvoiceToAddressUrn || address.urn !== user.preferredInvoiceToAddressUrn) &&
         (!user.preferredShipToAddressUrn || address.urn !== user.preferredShipToAddressUrn)
-    );
-  }
-
-  private listenForCheckAddressResult$(id: string) {
-    return this.featureEventNotifier.eventResults$.pipe(
-      whenTruthy(),
-      filter(result => result.id === id && result.event === 'check-address-successful' && result.successful),
-      take(1),
-      takeUntil(
-        this.featureEventNotifier.eventResults$.pipe(
-          whenTruthy(),
-          filter(result => result.id === id && result.event === 'check-address-cancellation')
-        )
-      )
     );
   }
 

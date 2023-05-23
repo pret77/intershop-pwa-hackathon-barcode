@@ -13,11 +13,12 @@ import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { Observable, Subject, takeUntil, throwError } from 'rxjs';
 
 import { Address } from 'ish-core/models/address/address.model';
-import { FeatureEventNotifierService } from 'ish-core/utils/feature-event-notifier/feature-event-notifier.service';
+import { FeatureEventService } from 'ish-core/utils/feature-event-notifier/feature-event-notifier.service';
 import { GenerateLazyComponent } from 'ish-core/utils/module-loader/generate-lazy-component.decorator';
 import { whenPropertyHasValue } from 'ish-core/utils/operators';
 
 import { AddressDoctorFacade } from '../../facades/address-doctor.facade';
+import { AddressDoctorEvents } from '../../models/address-doctor-event.model';
 
 @Component({
   selector: 'ish-address-doctor',
@@ -41,14 +42,14 @@ export class AddressDoctorComponent implements OnInit, OnDestroy {
   constructor(
     private ngbModal: NgbModal,
     private addressDoctorFacade: AddressDoctorFacade,
-    private featureEventNotifier: FeatureEventNotifierService
+    private featureEventService: FeatureEventService
   ) {}
 
   ngOnInit(): void {
-    this.featureEventNotifier.eventNotifier$
+    this.featureEventService.eventNotifier$
       .pipe(whenPropertyHasValue('feature', 'addressDoctor'), takeUntil(this.destroy$))
       .subscribe(({ id, event, data }) => {
-        if (event === 'check-address') {
+        if (event === AddressDoctorEvents.CheckAddress) {
           if (this.isCheckAddressOptions(data)) {
             const { address } = data;
             this.eventId = id;
@@ -70,7 +71,7 @@ export class AddressDoctorComponent implements OnInit, OnDestroy {
     const size = this.size;
     this.ngbModalRef = this.ngbModal.open(this.modalDialogTemplate, { size });
     this.ngbModalRef.hidden.pipe(takeUntil(this.destroy$)).subscribe(() => {
-      this.featureEventNotifier.sendResult(this.eventId, 'check-address-cancellation', true);
+      this.featureEventService.sendResult(this.eventId, AddressDoctorEvents.CheckAddressCancelled, true);
     });
   }
 
@@ -95,7 +96,7 @@ export class AddressDoctorComponent implements OnInit, OnDestroy {
   }
 
   sendAddress(address: Address) {
-    this.featureEventNotifier.sendResult(this.eventId, 'check-address-successful', true, address);
+    this.featureEventService.sendResult(this.eventId, AddressDoctorEvents.CheckAddressSuccess, true, address);
   }
 
   ngOnDestroy(): void {

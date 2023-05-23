@@ -1,13 +1,37 @@
-import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
+import { Injectable, InjectionToken, Injector, inject } from '@angular/core';
+import { Observable, Subject, switchMap } from 'rxjs';
 import { v4 as uuid } from 'uuid';
+
+import { FeatureToggleService } from 'ish-core/utils/feature-toggle/feature-toggle.service';
+import { InjectMultiple } from 'ish-core/utils/injection';
+
+export interface FeatureEventResultListener {
+  feature: string;
+  event: string;
+  resultListener$(id: string): Observable<FeatureEventResult>;
+}
+
+export interface FeatureEventResult {
+  id: string;
+  event: string;
+  successful: boolean;
+  data?: any;
+}
+
+export const FEATURE_EVENT_RESULT_LISTENER = new InjectionToken<FeatureEventResultListener>(
+  'featureEventResultListener'
+);
 
 @Injectable({
   providedIn: 'root',
 })
-export class FeatureEventNotifierService {
+export class FeatureEventService {
   private internalEventNotifier$ = new Subject<{ id: string; feature: string; event: string; data?: any }>();
-  private internalEventResult$ = new Subject<{ id: string; event: string; successful: boolean; data?: any }>();
+  private internalEventResult$ = new Subject<FeatureEventResult>();
+
+  private eventListeners: FeatureEventResultListener[] = [];
+
+  private featureToggleService = inject(FeatureToggleService);
 
   /**
    * Event stream to notify extensions for further actions
@@ -41,5 +65,29 @@ export class FeatureEventNotifierService {
    */
   sendResult(id: string, event: string, successful: boolean, data?: any) {
     this.internalEventResult$.next({ id, event, successful, data });
+  }
+
+  setupAvailableResultListener(injector: Injector) {
+    const eventListeners = injector.get<InjectMultiple<typeof FEATURE_EVENT_RESULT_LISTENER>>(
+      FEATURE_EVENT_RESULT_LISTENER,
+      []
+    );
+    eventListeners.forEach(eventListener => {
+      if (this.eventListeners.find(el => el.feature === eventListener.feature && el.event === eventListener.event)) {
+        return;
+      }
+
+      this.eventListeners.push(eventListener);
+    });
+  }
+
+  eventResultListener$(feature: string, event: string, id: string): Observable<FeatureEventResult> {
+    return this.featureToggleService
+      .enabled$(feature)
+      .pipe(
+        switchMap(() =>
+          this.eventListeners.find(el => el.feature === feature && el.event === event)?.resultListener$(id)
+        )
+      );
   }
 }
