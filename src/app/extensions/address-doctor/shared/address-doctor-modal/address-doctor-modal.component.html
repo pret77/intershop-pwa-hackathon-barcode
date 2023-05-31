@@ -1,0 +1,26 @@
+<ng-template #template>
+  <div class="modal-header">
+    <h2 class="modal-title">{{ 'address.doctor.suggestion.title' | translate }}</h2>
+    <button
+      type="button"
+      class="close"
+      [title]="'dialog.close.text' | translate"
+      [attr.aria-label]="'dialog.close.text' | translate"
+      (click)="hide()"
+    >
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <div class="modal-body">
+    <div class="col-md-12">
+      <formly-form [model]="model" [fields]="fields$ | async" [form]="form" class="pt-1"></formly-form>
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-primary" (click)="confirm()" data-testing-id="confirm">
+      {{ 'address.doctor.suggestion.confirm' | translate }}
+    </button>
+  </div>
+</ng-template>
