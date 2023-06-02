@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, Input, OnDestroy, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, Input, OnDestroy, ViewChild, inject } from '@angular/core';
 import { Subject, filter, map, takeUntil, tap } from 'rxjs';
 
 import { Address } from 'ish-core/models/address/address.model';
@@ -19,10 +19,10 @@ export class AddressDoctorComponent implements OnDestroy, AfterViewInit {
   @Input() size: string = undefined;
   @ViewChild('modal') modal: AddressDoctorModalComponent;
 
+  private featureEventService = inject(FeatureEventService);
+
   private eventId: string;
   private destroy$ = new Subject<void>();
-
-  constructor(private featureEventService: FeatureEventService) {}
 
   ngAfterViewInit(): void {
     this.featureEventService.eventNotifier$
@@ -52,6 +52,12 @@ export class AddressDoctorComponent implements OnDestroy, AfterViewInit {
 
   sendAddress(address: Address) {
     this.featureEventService.sendResult(this.eventId, AddressDoctorEvents.CheckAddressSuccess, true, address);
+  }
+
+  onModalHidden(hidden: boolean) {
+    if (hidden) {
+      this.featureEventService.sendResult(this.eventId, AddressDoctorEvents.CheckAddressCancelled, true);
+    }
   }
 
   ngOnDestroy(): void {

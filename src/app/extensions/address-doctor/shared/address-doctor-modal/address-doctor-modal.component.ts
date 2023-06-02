@@ -7,6 +7,7 @@ import {
   Output,
   TemplateRef,
   ViewChild,
+  inject,
 } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
@@ -15,10 +16,8 @@ import { TranslateService } from '@ngx-translate/core';
 import { Observable, Subject, map, takeUntil } from 'rxjs';
 
 import { Address } from 'ish-core/models/address/address.model';
-import { FeatureEventService } from 'ish-core/utils/feature-event-notifier/feature-event-notifier.service';
 
 import { AddressDoctorFacade } from '../../facades/address-doctor.facade';
-import { AddressDoctorEvents } from '../../models/address-doctor-event.model';
 
 @Component({
   selector: 'ish-address-doctor-modal',
@@ -28,7 +27,12 @@ import { AddressDoctorEvents } from '../../models/address-doctor-event.model';
 export class AddressDoctorModalComponent implements OnDestroy {
   @Input() size: string = undefined;
   @Output() confirmAddress = new EventEmitter<Address>();
+  @Output() hidden = new EventEmitter<boolean>();
   @ViewChild('template', { static: true }) modalDialogTemplate: TemplateRef<unknown>;
+
+  private ngbModal = inject(NgbModal);
+  private addressDoctorFacade = inject(AddressDoctorFacade);
+  private translateService = inject(TranslateService);
 
   ngbModalRef: NgbModalRef;
 
@@ -40,15 +44,7 @@ export class AddressDoctorModalComponent implements OnDestroy {
     address: Address;
   };
 
-  private eventId: string;
   private destroy$ = new Subject<void>();
-
-  constructor(
-    private ngbModal: NgbModal,
-    private addressDoctorFacade: AddressDoctorFacade,
-    private featureEventService: FeatureEventService,
-    private translateService: TranslateService
-  ) {}
 
   openModal(address: Address) {
     this.fields$ = this.getFields(address);
@@ -65,7 +61,7 @@ export class AddressDoctorModalComponent implements OnDestroy {
     const size = this.size;
     this.ngbModalRef = this.ngbModal.open(this.modalDialogTemplate, { size });
     this.ngbModalRef.hidden.pipe(takeUntil(this.destroy$)).subscribe(() => {
-      this.featureEventService.sendResult(this.eventId, AddressDoctorEvents.CheckAddressCancelled, true);
+      this.hidden.emit(true);
     });
   }
 

@@ -4,13 +4,14 @@ import { ActivatedRoute, ActivatedRouteSnapshot, UrlSegment } from '@angular/rou
 import { TranslateModule } from '@ngx-translate/core';
 import { MockComponent } from 'ng-mocks';
 import { of } from 'rxjs';
-import { LazyAddressDoctorComponent } from 'src/app/extensions/address-doctor/exports/lazy-address-doctor/lazy-address-doctor.component';
 import { anything, instance, mock, verify, when } from 'ts-mockito';
 
 import { AccountFacade } from 'ish-core/facades/account.facade';
 import { FeatureToggleModule } from 'ish-core/feature-toggle.module';
 import { ErrorMessageComponent } from 'ish-shared/components/common/error-message/error-message.component';
 import { FormlyTestingModule } from 'ish-shared/formly/dev/testing/formly-testing.module';
+
+import { LazyAddressDoctorComponent } from '../../extensions/address-doctor/exports/lazy-address-doctor/lazy-address-doctor.component';
 
 import { RegistrationPageComponent } from './registration-page.component';
 import { RegistrationFormConfigurationService } from './services/registration-form-configuration/registration-form-configuration.service';

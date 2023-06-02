@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { filter, map } from 'rxjs';
 
 import { Address } from 'ish-core/models/address/address.model';
@@ -8,10 +8,10 @@ import { AddressDoctorApiService } from '../services/address-doctor-api/address-
 
 @Injectable({ providedIn: 'root' })
 export class AddressDoctorFacade {
-  constructor(private adressDoctorApi: AddressDoctorApiService) {}
+  private addressDoctorApi = inject(AddressDoctorApiService);
 
   checkAddress(address: Address) {
-    return this.adressDoctorApi.postAddress(address).pipe(
+    return this.addressDoctorApi.postAddress(address).pipe(
       filter(variants => variants.length > 0),
       map((variants: unknown[]) =>
         variants.map((variant: AddressDoctorVariants) => this.mapAddress(address, variant.Variants[0]))

@@ -1,1 +1,6 @@
-<ish-address-doctor-modal #modal [size]="size" (confirmAddress)="sendAddress($event)"></ish-address-doctor-modal>
+<ish-address-doctor-modal
+  #modal
+  [size]="size"
+  (confirmAddress)="sendAddress($event)"
+  (hidden)="onModalHidden($event)"
+></ish-address-doctor-modal>
