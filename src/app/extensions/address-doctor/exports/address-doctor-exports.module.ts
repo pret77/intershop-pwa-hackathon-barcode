@@ -9,7 +9,7 @@ import {
 } from 'ish-core/utils/feature-event-notifier/feature-event-notifier.service';
 import { whenTruthy } from 'ish-core/utils/operators';
 
-import { AddressDoctorEvents } from '../models/address-doctor-event.model';
+import { AddressDoctorEvents } from '../models/address-doctor/address-doctor-event.model';
 
 import { LazyAddressDoctorComponent } from './lazy-address-doctor/lazy-address-doctor.component';
 

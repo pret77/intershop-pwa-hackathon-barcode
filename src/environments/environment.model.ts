@@ -1,4 +1,4 @@
-import { AddressDoctorConfig } from 'src/app/extensions/address-doctor/models/address-doctor-config.model';
+import { AddressDoctorConfig } from 'src/app/extensions/address-doctor/models/address-doctor/address-doctor-config.model';
 
 import { Auth0Config } from 'ish-core/identity-provider/auth0.identity-provider';
 import { CookieConsentOptions } from 'ish-core/models/cookies/cookies.model';

@@ -6,14 +6,16 @@ import { Address } from 'ish-core/models/address/address.model';
 import { whenTruthy } from 'ish-core/utils/operators';
 import { StatePropertiesService } from 'ish-core/utils/state-transfer/state-properties.service';
 
-import { AddressDoctorConfig } from '../../models/address-doctor-config.model';
+import { AddressDoctorConfig } from '../../models/address-doctor/address-doctor-config.model';
+import { AddressDoctorVariants } from '../../models/address-doctor/address-doctor-variant.interface';
+import { AddressDoctorMapper } from '../../models/address-doctor/address-doctor.mapper';
 
 @Injectable({ providedIn: 'root' })
 export class AddressDoctorApiService {
   http = inject(HttpClient);
   statePropertiesService = inject(StatePropertiesService);
 
-  postAddress(address: Address) {
+  postAddress(address: Address): Observable<Address[]> {
     let addressLine = '';
 
     if (address.addressLine2) {
@@ -25,14 +27,16 @@ export class AddressDoctorApiService {
     return this.mapToBody(address, addressLine).pipe(
       whenTruthy(),
       switchMap(({ url, body }) =>
-        this.http
-          .post(url, body)
+        this.http.post(url, body).pipe(
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          .pipe(map((body: any) => body.Response[0].Results))
+          map<any, AddressDoctorVariants[]>((body: any) => body.Response[0].Results),
+          map(results => results.map(result => ({ ...address, ...AddressDoctorMapper.fromData(result.Variants[0]) })))
+        )
       )
     );
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private mapToBody(address: Address, addressLine: string): Observable<{ url: string; body: any }> {
     return this.statePropertiesService
       .getStateOrEnvOrDefault<AddressDoctorConfig>('ADDRESS_DOCTOR', 'addressDoctor')

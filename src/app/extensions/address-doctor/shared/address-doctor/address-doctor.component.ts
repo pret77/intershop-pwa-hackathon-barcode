@@ -6,7 +6,7 @@ import { FeatureEventService } from 'ish-core/utils/feature-event-notifier/featu
 import { GenerateLazyComponent } from 'ish-core/utils/module-loader/generate-lazy-component.decorator';
 import { whenPropertyHasValue } from 'ish-core/utils/operators';
 
-import { AddressDoctorEvents } from '../../models/address-doctor-event.model';
+import { AddressDoctorEvents } from '../../models/address-doctor/address-doctor-event.model';
 import { AddressDoctorModalComponent } from '../address-doctor-modal/address-doctor-modal.component';
 
 @Component({
