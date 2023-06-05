@@ -117,7 +117,6 @@ describe('Basket Invoice Address Widget Component', () => {
         [
           "ish-address",
           "ish-formly-customer-address-form",
-          "ish-lazy-address-doctor",
         ]
       `);
       expect(findAllDataTestingIDs(fixture)).toMatchInlineSnapshot(`
@@ -140,7 +139,6 @@ describe('Basket Invoice Address Widget Component', () => {
         [
           "ish-address",
           "ish-formly-customer-address-form",
-          "ish-lazy-address-doctor",
         ]
       `);
       expect(findAllDataTestingIDs(fixture)).toMatchInlineSnapshot(`

@@ -145,7 +145,6 @@ describe('Basket Shipping Address Widget Component', () => {
           "formly-field",
           "ng-component",
           "ish-formly-customer-address-form",
-          "ish-lazy-address-doctor",
         ]
       `);
       expect(findAllDataTestingIDs(fixture)).toMatchInlineSnapshot(`
@@ -200,7 +199,6 @@ describe('Basket Shipping Address Widget Component', () => {
             "formly-field",
             "ng-component",
             "ish-formly-customer-address-form",
-            "ish-lazy-address-doctor",
           ]
         `);
         expect(findAllDataTestingIDs(fixture)).toMatchInlineSnapshot(`

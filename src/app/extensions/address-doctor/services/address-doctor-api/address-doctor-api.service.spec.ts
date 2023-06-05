@@ -159,103 +159,15 @@ describe('Address Doctor Api Service', () => {
         expect(data).toMatchInlineSnapshot(`
 [
   {
-    "Variants": [
-      {
-        "AddressElements": {
-          "AdministrativeDivision": [
-            {
-              "Value": "Nordrhein-Westfalen",
-              "Variants": {
-                "Abbreviation": "NW",
-                "Extended": "Nordrhein-Westfalen",
-                "ISO": "NW",
-              },
-            },
-          ],
-          "Country": [
-            {
-              "Code": "DE",
-              "Name": "GERMANY",
-            },
-          ],
-          "HouseNumber": [
-            {
-              "SubItems": {
-                "number": "65432",
-              },
-              "Value": "65432",
-            },
-          ],
-          "Locality": [
-            {
-              "SubItems": {
-                "Name": "Köln",
-              },
-              "Value": "Köln",
-            },
-            {
-              "SubItems": {
-                "Name": "Altstadt-Nord",
-              },
-              "Value": "Altstadt-Nord",
-            },
-          ],
-          "PostalCode": [
-            {
-              "SubItems": {
-                "Base": "50667",
-              },
-              "Value": "50667",
-            },
-          ],
-          "Residue": [
-            {
-              "Type": "Superfluous",
-              "Value": "TRAINERSTRASSE",
-            },
-          ],
-          "Street": [
-            {
-              "SubItems": {
-                "Name": "Theo-Burauen-Platz",
-              },
-              "Value": "Theo-Burauen-Platz",
-            },
-          ],
-        },
-        "PreformattedData": {
-          "PostalDeliveryAddressLines": [
-            {
-              "Value": "Theo-Burauen-Platz 65432",
-            },
-          ],
-          "PostalFormattedAddressLines": [
-            {
-              "Value": "Theo-Burauen-Platz 65432",
-            },
-            {
-              "Value": "50667 Köln",
-            },
-          ],
-          "PostalLocalityLine": {
-            "Value": "50667 Köln",
-          },
-          "SingleAddressLine": {
-            "Value": "Theo-Burauen-Platz 65432;50667 Köln",
-          },
-        },
-        "StatusValues": {
-          "AddressCount": "1",
-          "AddressType": "S",
-          "LanguageISO3": "DEU",
-          "MatchPercentage": "79.88",
-          "ResultGroup": "Street",
-          "ResultQuality": 5,
-          "Script": "Latin1",
-          "UsedVerificationLevel": "None",
-        },
-      },
-    ],
+    "addressLine1": "Theo-Burauen-Platz 65432",
+    "city": " Köln Altstadt-Nord",
+    "firstName": "Patricia",
+    "id": "0001"",
+    "lastName": "Miller",
+    "mainDivision": "Nordrhein-Westfalen",
+    "postalCode": "50667",
+    "title": "Ms.",
+    "urn": "urn:address:customer:JgEKAE8BA50AAAFgDtAd1LZU:1001",
   },
 ]
 `);
