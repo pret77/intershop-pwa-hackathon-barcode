@@ -7,7 +7,7 @@ import { instance, mock, when } from 'ts-mockito';
 import { Address } from 'ish-core/models/address/address.model';
 import { StatePropertiesService } from 'ish-core/utils/state-transfer/state-properties.service';
 
-import { AddressDoctorConfig } from '../../models/address-doctor-config.model';
+import { AddressDoctorConfig } from '../../models/address-doctor/address-doctor-config.model';
 
 import { AddressDoctorApiService } from './address-doctor-api.service';
 

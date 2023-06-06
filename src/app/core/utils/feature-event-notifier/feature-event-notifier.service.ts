@@ -67,11 +67,18 @@ export class FeatureEventService {
     this.internalEventResult$.next({ id, event, successful, data });
   }
 
+  /**
+   * Will append all configured FEATURE_EVENT_RESULT_LISTENER together to be available in the FeatureEventNotifierService
+   * @param injector current injector instance
+   */
   setupAvailableResultListener(injector: Injector) {
+    // get all configured result listener by FEATURE_EVENT_RESULT_LISTENER injection token from current injector instance
     const eventListeners = injector.get<InjectMultiple<typeof FEATURE_EVENT_RESULT_LISTENER>>(
       FEATURE_EVENT_RESULT_LISTENER,
       []
     );
+
+    // append configured listener to available eventListeners list in case it is not yet available
     eventListeners.forEach(eventListener => {
       if (this.eventListeners.find(el => el.feature === eventListener.feature && el.event === eventListener.event)) {
         return;
@@ -81,6 +88,13 @@ export class FeatureEventService {
     });
   }
 
+  /**
+   * Find correct event result listener
+   * @param feature responsible extension
+   * @param event event type
+   * @param id id of generated notification event
+   * @returns result listener stream, which should notify about results of notification event
+   */
   eventResultListener$(feature: string, event: string, id: string): Observable<FeatureEventResult> {
     return this.featureToggleService
       .enabled$(feature)
