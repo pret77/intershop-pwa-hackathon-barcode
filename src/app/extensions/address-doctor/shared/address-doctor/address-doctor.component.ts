@@ -31,7 +31,7 @@ export class AddressDoctorComponent implements OnDestroy, AfterViewInit {
       .pipe(
         whenPropertyHasValue('feature', 'addressDoctor'),
         filter(({ event }) => event === AddressDoctorEvents.CheckAddress),
-        //save notifier id for event result
+        // save notifier id for event result
         tap(({ id }) => (this.eventId = id)),
         map(({ data }) => this.mapToAddress(data)),
         takeUntil(this.destroy$)

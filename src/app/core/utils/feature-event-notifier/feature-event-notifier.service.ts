@@ -15,6 +15,15 @@ export interface FeatureEventResult {
   id: string;
   event: string;
   successful: boolean;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data?: any;
+}
+
+export interface FeatureEventNotifier {
+  id: string;
+  feature: string;
+  event: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data?: any;
 }
 
@@ -26,7 +35,7 @@ export const FEATURE_EVENT_RESULT_LISTENER = new InjectionToken<FeatureEventResu
   providedIn: 'root',
 })
 export class FeatureEventService {
-  private internalEventNotifier$ = new Subject<{ id: string; feature: string; event: string; data?: any }>();
+  private internalEventNotifier$ = new Subject<FeatureEventNotifier>();
   private internalEventResult$ = new Subject<FeatureEventResult>();
 
   private eventListeners: FeatureEventResultListener[] = [];
@@ -50,6 +59,7 @@ export class FeatureEventService {
    * @param data optional data for event
    * @returns identifier of generated event
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   sendNotification(feature: string, event: string, data?: any): string {
     const id = uuid();
     this.internalEventNotifier$.next({ id, feature, event, data });
@@ -63,6 +73,7 @@ export class FeatureEventService {
    * @param successful Is result successful?
    * @param data optional data for event
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   sendResult(id: string, event: string, successful: boolean, data?: any) {
     this.internalEventResult$.next({ id, event, successful, data });
   }

@@ -4,7 +4,10 @@ import { of } from 'rxjs';
 import { instance, mock, when } from 'ts-mockito';
 
 import { Address } from 'ish-core/models/address/address.model';
-import { FeatureEventService } from 'ish-core/utils/feature-event-notifier/feature-event-notifier.service';
+import {
+  FeatureEventNotifier,
+  FeatureEventService,
+} from 'ish-core/utils/feature-event-notifier/feature-event-notifier.service';
 
 import { AddressDoctorModalComponent } from '../address-doctor-modal/address-doctor-modal.component';
 
@@ -37,7 +40,12 @@ describe('Address Doctor Component', () => {
     }).compileComponents();
 
     when(featureEventService.eventNotifier$).thenReturn(
-      of({ id: 'custom-process-id', feature: 'addressDoctor', event: 'check-address', data: mockAddress })
+      of({
+        id: 'custom-process-id',
+        feature: 'addressDoctor',
+        event: 'check-address',
+        data: mockAddress,
+      } as FeatureEventNotifier)
     );
   });
 
