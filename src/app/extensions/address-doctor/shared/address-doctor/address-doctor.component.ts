@@ -1,11 +1,14 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, Input, OnDestroy, ViewChild, inject } from '@angular/core';
+import { isEqual, pick } from 'lodash-es';
 import { Subject, filter, map, takeUntil, tap } from 'rxjs';
+import { concatMap } from 'rxjs/operators';
 
 import { Address } from 'ish-core/models/address/address.model';
 import { FeatureEventService } from 'ish-core/utils/feature-event-notifier/feature-event-notifier.service';
 import { GenerateLazyComponent } from 'ish-core/utils/module-loader/generate-lazy-component.decorator';
 import { whenPropertyHasValue } from 'ish-core/utils/operators';
 
+import { AddressDoctorFacade } from '../../facades/address-doctor.facade';
 import { AddressDoctorEvents } from '../../models/address-doctor/address-doctor-event.model';
 import { AddressDoctorModalComponent } from '../address-doctor-modal/address-doctor-modal.component';
 
@@ -21,6 +24,7 @@ export class AddressDoctorComponent implements OnDestroy, AfterViewInit {
   @ViewChild('modal') modal: AddressDoctorModalComponent;
 
   private featureEventService = inject(FeatureEventService);
+  private addressDoctorFacade = inject(AddressDoctorFacade);
 
   private eventId: string;
   private destroy$ = new Subject<void>();
@@ -34,10 +38,19 @@ export class AddressDoctorComponent implements OnDestroy, AfterViewInit {
         // save notifier id for event result
         tap(({ id }) => (this.eventId = id)),
         map(({ data }) => this.mapToAddress(data)),
+        concatMap(address =>
+          this.addressDoctorFacade.checkAddress(address).pipe(map(suggestions => ({ address, suggestions })))
+        ),
         takeUntil(this.destroy$)
       )
       // open related address doctor modal with event notifier address data
-      .subscribe(address => this.modal.openModal(address));
+      .subscribe(({ address, suggestions }) => {
+        if (!suggestions.find(suggestion => this.isAddressEqual(address, suggestion))) {
+          this.modal.openModal(address, suggestions);
+        } else {
+          this.sendAddress(address);
+        }
+      });
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -54,6 +67,16 @@ export class AddressDoctorComponent implements OnDestroy, AfterViewInit {
     address: Address;
   } {
     return 'address' in object;
+  }
+
+  private isAddressEqual(address: Address, suggestion: Address): boolean {
+    if (!address || !suggestion) {
+      return false;
+    }
+
+    const attributes = ['addressLine1', 'postalCode', 'city'];
+
+    return isEqual(pick(address, ...attributes), pick(suggestion, ...attributes));
   }
 
   /**

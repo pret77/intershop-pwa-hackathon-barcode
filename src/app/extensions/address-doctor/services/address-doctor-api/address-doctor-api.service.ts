@@ -12,8 +12,8 @@ import { AddressDoctorMapper } from '../../models/address-doctor/address-doctor.
 
 @Injectable({ providedIn: 'root' })
 export class AddressDoctorApiService {
-  http = inject(HttpClient);
-  statePropertiesService = inject(StatePropertiesService);
+  private http = inject(HttpClient);
+  private statePropertiesService = inject(StatePropertiesService);
 
   postAddress(address: Address): Observable<Address[]> {
     let addressLine = '';

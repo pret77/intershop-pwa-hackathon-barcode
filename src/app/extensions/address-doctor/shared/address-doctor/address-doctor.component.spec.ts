@@ -9,6 +9,7 @@ import {
   FeatureEventService,
 } from 'ish-core/utils/feature-event-notifier/feature-event-notifier.service';
 
+import { AddressDoctorFacade } from '../../facades/address-doctor.facade';
 import { AddressDoctorModalComponent } from '../address-doctor-modal/address-doctor-modal.component';
 
 import { AddressDoctorComponent } from './address-doctor.component';
@@ -36,7 +37,10 @@ describe('Address Doctor Component', () => {
 
     await TestBed.configureTestingModule({
       declarations: [MockComponent(AddressDoctorModalComponent)],
-      providers: [{ provide: FeatureEventService, useFactory: () => instance(featureEventService) }],
+      providers: [
+        { provide: AddressDoctorFacade, useFactory: () => instance(mock(AddressDoctorFacade)) },
+        { provide: FeatureEventService, useFactory: () => instance(featureEventService) },
+      ],
     }).compileComponents();
 
     when(featureEventService.eventNotifier$).thenReturn(

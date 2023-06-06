@@ -4,13 +4,9 @@ import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
 import { pick } from 'lodash-es';
 import { MockComponent } from 'ng-mocks';
-import { of } from 'rxjs';
-import { anything, instance, mock, when } from 'ts-mockito';
 
 import { Address } from 'ish-core/models/address/address.model';
 import { FormlyTestingModule } from 'ish-shared/formly/dev/testing/formly-testing.module';
-
-import { AddressDoctorFacade } from '../../facades/address-doctor.facade';
 
 import { AddressDoctorModalComponent } from './address-doctor-modal.component';
 
@@ -64,18 +60,11 @@ describe('Address Doctor Modal Component', () => {
   let fixture: ComponentFixture<AddressDoctorModalComponent>;
   let element: HTMLElement;
 
-  let addressDoctorFacade: AddressDoctorFacade;
-
   beforeEach(async () => {
-    addressDoctorFacade = mock(AddressDoctorFacade);
-
     await TestBed.configureTestingModule({
       imports: [FormlyTestingModule, RouterTestingModule, TranslateModule.forRoot()],
       declarations: [AddressDoctorModalComponent, MockComponent(FaIconComponent)],
-      providers: [{ provide: AddressDoctorFacade, useFactory: () => instance(addressDoctorFacade) }],
     }).compileComponents();
-
-    when(addressDoctorFacade.checkAddress(anything())).thenReturn(of(mockAddresses));
   });
 
   beforeEach(() => {
@@ -90,15 +79,14 @@ describe('Address Doctor Modal Component', () => {
     expect(() => fixture.detectChanges()).not.toThrow();
   });
 
-  it('should display modal dialog when open function is called', done => {
+  it('should display modal dialog when open function is called', () => {
     fixture.detectChanges();
-    component.openModal(mockAddresses[0]);
+    component.openModal(mockAddresses[0], mockAddresses);
     expect(component.ngbModalRef).toBeTruthy();
 
-    component.fields$.subscribe(fields => {
-      const mapped = fields.map(field => pick(field, ['type', 'key']));
-      expect(mapped).toMatchInlineSnapshot(
-        `
+    const mapped = component.fields.map(field => pick(field, ['type', 'key']));
+    expect(mapped).toMatchInlineSnapshot(
+      `
         [
           {
             "key": "defaultText",
@@ -130,9 +118,7 @@ describe('Address Doctor Modal Component', () => {
           },
         ]
       `
-      );
-      done();
-    });
+    );
   });
 
   it('should not display modal dialog when open function is not called', () => {
