@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MockComponent } from 'ng-mocks';
 import { of } from 'rxjs';
 import { instance, mock, when } from 'ts-mockito';
 
@@ -10,7 +9,6 @@ import {
 } from 'ish-core/utils/feature-event-notifier/feature-event-notifier.service';
 
 import { AddressDoctorFacade } from '../../facades/address-doctor.facade';
-import { AddressDoctorModalComponent } from '../address-doctor-modal/address-doctor-modal.component';
 
 import { AddressDoctorComponent } from './address-doctor.component';
 
@@ -36,7 +34,6 @@ describe('Address Doctor Component', () => {
     featureEventService = mock(FeatureEventService);
 
     await TestBed.configureTestingModule({
-      declarations: [MockComponent(AddressDoctorModalComponent)],
       providers: [
         { provide: AddressDoctorFacade, useFactory: () => instance(mock(AddressDoctorFacade)) },
         { provide: FeatureEventService, useFactory: () => instance(featureEventService) },

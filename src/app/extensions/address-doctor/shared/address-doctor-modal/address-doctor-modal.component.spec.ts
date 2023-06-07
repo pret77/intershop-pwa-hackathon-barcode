@@ -1,9 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
-import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { TranslateModule } from '@ngx-translate/core';
 import { pick } from 'lodash-es';
-import { MockComponent } from 'ng-mocks';
 
 import { Address } from 'ish-core/models/address/address.model';
 import { FormlyTestingModule } from 'ish-shared/formly/dev/testing/formly-testing.module';
@@ -62,8 +59,8 @@ describe('Address Doctor Modal Component', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [FormlyTestingModule, RouterTestingModule, TranslateModule.forRoot()],
-      declarations: [AddressDoctorModalComponent, MockComponent(FaIconComponent)],
+      imports: [FormlyTestingModule, TranslateModule.forRoot()],
+      declarations: [AddressDoctorModalComponent],
     }).compileComponents();
   });
 

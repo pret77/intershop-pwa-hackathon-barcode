@@ -21,8 +21,6 @@ import { ModalDialogComponent } from 'ish-shared/components/common/modal-dialog/
 import { FormlyCustomerAddressFormComponent } from 'ish-shared/formly-address-forms/components/formly-customer-address-form/formly-customer-address-form.component';
 import { FormlyTestingModule } from 'ish-shared/formly/dev/testing/formly-testing.module';
 
-import { LazyAddressDoctorComponent } from '../../../extensions/address-doctor/exports/lazy-address-doctor/lazy-address-doctor.component';
-
 import { AccountAddressesComponent } from './account-addresses.component';
 
 const mockAddresses = [
@@ -92,7 +90,6 @@ describe('Account Addresses Component', () => {
           MockComponent(ErrorMessageComponent),
           MockComponent(FaIconComponent),
           MockComponent(FormlyCustomerAddressFormComponent),
-          MockComponent(LazyAddressDoctorComponent),
           MockComponent(ModalDialogComponent),
         ],
         imports: [
@@ -315,21 +312,8 @@ describe('Account Addresses Component', () => {
       accountFacade = mock(AccountFacade);
       featureEventService = mock(FeatureEventService);
       await TestBed.configureTestingModule({
-        declarations: [
-          AccountAddressesComponent,
-          MockComponent(AddressComponent),
-          MockComponent(ErrorMessageComponent),
-          MockComponent(FaIconComponent),
-          MockComponent(FormlyCustomerAddressFormComponent),
-          MockComponent(LazyAddressDoctorComponent),
-          MockComponent(ModalDialogComponent),
-        ],
-        imports: [
-          FeatureToggleModule.forTesting('addressDoctor'),
-          FormlyTestingModule,
-          RouterTestingModule,
-          TranslateModule.forRoot(),
-        ],
+        declarations: [AccountAddressesComponent, MockComponent(ErrorMessageComponent)],
+        imports: [FeatureToggleModule.forTesting('addressDoctor'), TranslateModule.forRoot()],
         providers: [
           { provide: AccountFacade, useFactory: () => instance(accountFacade) },
           { provide: FeatureEventService, useFactory: () => instance(featureEventService) },
