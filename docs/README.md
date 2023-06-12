@@ -85,3 +85,4 @@ kb_sync_latest_only
 - [Guide - Extended Product Configurations with Tacton](./guides/tacton-product-configuration.md)
 - [Guide - Monitoring with Prometheus](./guides/prometheus-monitoring.md)
 - [Guide - Store Locator with Google Maps](./guides/store-locator.md)
+- [Guide - Address Doctor](./guides/address-doctor.md)
