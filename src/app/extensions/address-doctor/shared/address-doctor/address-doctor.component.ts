@@ -1,5 +1,4 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, Input, OnDestroy, ViewChild, inject } from '@angular/core';
-import { isEqual, pick } from 'lodash-es';
 import { Subject, filter, map, takeUntil, tap } from 'rxjs';
 import { concatMap, first } from 'rxjs/operators';
 
@@ -10,6 +9,7 @@ import { whenPropertyHasValue } from 'ish-core/utils/operators';
 
 import { AddressDoctorFacade } from '../../facades/address-doctor.facade';
 import { AddressDoctorEvents } from '../../models/address-doctor/address-doctor-event.model';
+import { AddressDoctorHelper } from '../../models/address-doctor/address-doctor.helper';
 import { AddressDoctorModalComponent } from '../address-doctor-modal/address-doctor-modal.component';
 
 @Component({
@@ -48,7 +48,7 @@ export class AddressDoctorComponent implements OnDestroy, AfterViewInit {
       )
       // open related address doctor modal with event notifier address data
       .subscribe(({ address, suggestions }) => {
-        if (!suggestions.find(suggestion => this.isAddressEqual(address, suggestion))) {
+        if (!suggestions.find(suggestion => AddressDoctorHelper.equalityCheck(address, suggestion))) {
           this.modal.openModal(address, suggestions);
         } else {
           this.sendAddress(address);
@@ -70,16 +70,6 @@ export class AddressDoctorComponent implements OnDestroy, AfterViewInit {
     address: Address;
   } {
     return 'address' in object;
-  }
-
-  private isAddressEqual(address: Address, suggestion: Address): boolean {
-    if (!address || !suggestion) {
-      return false;
-    }
-
-    const attributes = ['addressLine1', 'postalCode', 'city'];
-
-    return isEqual(pick(address, ...attributes), pick(suggestion, ...attributes));
   }
 
   /**

@@ -2,7 +2,15 @@ import { Address } from 'ish-core/models/address/address.model';
 
 import { AddressDoctorVariant } from './address-doctor-variant.interface';
 
+/**
+ * Map incoming data from Address Doctor REST Api to ICM compliant addresses.
+ * The mapper is implemented and tested against German and British addresses.
+ * The implementation with attributes needs to be adapted for other foreign addresses, when the overwrite does not match.
+ *
+ */
 export class AddressDoctorMapper {
+  static attributes = ['addressLine1', 'postalCode', 'city'];
+
   static fromData(variant: AddressDoctorVariant): Partial<Address> {
     let city = '';
 
@@ -16,9 +24,6 @@ export class AddressDoctorMapper {
       }`,
       postalCode: variant.AddressElements.PostalCode ? variant.AddressElements.PostalCode[0].Value : '',
       city,
-      mainDivision: variant.AddressElements.AdministrativeDivision
-        ? variant.AddressElements.AdministrativeDivision[0].Value
-        : '',
     };
   }
 }
