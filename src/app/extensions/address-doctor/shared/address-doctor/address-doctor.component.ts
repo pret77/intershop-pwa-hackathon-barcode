@@ -1,7 +1,7 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, Input, OnDestroy, ViewChild, inject } from '@angular/core';
 import { isEqual, pick } from 'lodash-es';
 import { Subject, filter, map, takeUntil, tap } from 'rxjs';
-import { concatMap } from 'rxjs/operators';
+import { concatMap, first } from 'rxjs/operators';
 
 import { Address } from 'ish-core/models/address/address.model';
 import { FeatureEventService } from 'ish-core/utils/feature-event-notifier/feature-event-notifier.service';
@@ -33,13 +33,16 @@ export class AddressDoctorComponent implements OnDestroy, AfterViewInit {
     // react on all CheckAddress event notifier for 'addressDoctor' feature
     this.featureEventService.eventNotifier$
       .pipe(
-        whenPropertyHasValue('feature', 'addressDoctor'),
         filter(({ event }) => event === AddressDoctorEvents.CheckAddress),
+        whenPropertyHasValue('feature', 'addressDoctor'),
         // save notifier id for event result
         tap(({ id }) => (this.eventId = id)),
         map(({ data }) => this.mapToAddress(data)),
         concatMap(address =>
-          this.addressDoctorFacade.checkAddress(address).pipe(map(suggestions => ({ address, suggestions })))
+          this.addressDoctorFacade.checkAddress(address).pipe(
+            first(),
+            map(suggestions => ({ address, suggestions }))
+          )
         ),
         takeUntil(this.destroy$)
       )
