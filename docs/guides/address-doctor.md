@@ -5,9 +5,9 @@ kb_everyone
 kb_sync_latest_only
 -->
 
-# Extensive Address Check with Address Doctor
+# Address Check with Address Doctor
 
-We integrated [Address Doctor](https://www.informatica.com/de/products/data-quality/data-as-a-service/address-verification.html) to verify all address data for correctness.
+We integrated [Address Doctor](https://www.informatica.com/de/products/data-quality/data-as-a-service/address-verification.html) to verify address data for correctness.
 
 ## Setup
 
@@ -20,23 +20,23 @@ export const environment: Environment = {
   ...ENVIRONMENT_DEFAULTS,
 
   addressDoctor: {
-    url: '<addressDoctor-url>'
+    url: '<addressDoctor-url>',
     login: '<addressDoctor-login>',
     password: '<addressDoctor-password>',
     maxResultCount: 5,
-};
+  },
 ```
 
 This configuration can also be supplied via environment variable `ADDRESS_DOCTOR` as stringified JSON:
 
 ```text
-ADDRESS_DOCTOR='{ "addressDoctor": { "url": "<addressDoctor-url>", "login": "<addressDoctor-login>", "password": "<addressDoctor-password>", "maxResultCount": "<addressDoctor-maxResultCount>" } }';
+ADDRESS_DOCTOR='{ "addressDoctor": { "url": "<addressDoctor-url>", "login": "<addressDoctor-login>", "password": "<addressDoctor-password>", "maxResultCount": "5" } }';
 ```
 
 ## Workflow
 
 To check an address with the address doctor the PWA needs to render the `<ish-lazy-address-doctor>` component.
-When the user submit the address data, the PWA needs to send a [feature notification event](../../src/app/core/utils/feature-event-notifier/feature-event-notifier.service.ts) with the request to check the data.
+When the user submits the address data, the PWA needs to send a [feature notification event](../../src/app/core/utils/feature-event-notifier/feature-event-notifier.service.ts) with the request to check the data.
 
 ```typescript
 const id = this.featureEventService.sendNotification('addressDoctor', 'check-address', {

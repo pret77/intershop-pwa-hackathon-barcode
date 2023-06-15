@@ -46,12 +46,10 @@ export class AddressDoctorModalComponent implements OnDestroy {
   openModal(address: Address, suggestions: Address[]) {
     this.fields = this.getFields(address, suggestions);
     this.model = {
-      defaultText: `<p>${this.translateService.instant(
-        'address.doctor.suggestion.text.1'
-      )} ${this.translateService.instant('address.doctor.suggestion.text.2')}</p><h3>${this.translateService.instant(
-        'address.doctor.suggestion.actual.address'
-      )}</h3>`,
-      suggestionText: `<h3>${this.translateService.instant('address.doctor.suggestion.proposals')}</h3>`,
+      defaultText: `
+        ${this.translateService.instant('address.doctor.suggestion.text')}
+        <h3 class="mb-0">${this.translateService.instant('address.doctor.suggestion.address')}</h3>`,
+      suggestionText: `<h3 class="mb-0">${this.translateService.instant('address.doctor.suggestion.proposals')}</h3>`,
       address,
     };
 
@@ -76,15 +74,16 @@ export class AddressDoctorModalComponent implements OnDestroy {
       {
         type: 'ish-html-text-field',
         key: 'defaultText',
+        wrappers: [],
         props: {
-          inputClass: ' ',
+          fieldClass: 'col-12',
         },
       },
       {
         type: 'ish-radio-field',
         key: 'address',
         props: {
-          fieldClass: ' ',
+          fieldClass: 'col-12',
           id: address.id,
           value: address,
           label: this.formatAddress(address),
@@ -93,15 +92,16 @@ export class AddressDoctorModalComponent implements OnDestroy {
       {
         type: 'ish-html-text-field',
         key: 'suggestionText',
+        wrappers: [],
         props: {
-          inputClass: ' ',
+          fieldClass: 'col-12',
         },
       },
       ...suggestions.map(suggestion => ({
         type: 'ish-radio-field',
         key: 'address',
         props: {
-          fieldClass: ' ',
+          fieldClass: 'col-12',
           id: suggestion.id,
           value: suggestion,
           label: this.formatAddress(suggestion),
