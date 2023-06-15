@@ -48,7 +48,10 @@ export class AddressDoctorComponent implements OnDestroy, AfterViewInit {
       )
       // open related address doctor modal with event notifier address data
       .subscribe(({ address, suggestions }) => {
-        if (!suggestions.find(suggestion => AddressDoctorHelper.equalityCheck(address, suggestion))) {
+        if (
+          suggestions?.length &&
+          !suggestions.find(suggestion => AddressDoctorHelper.equalityCheck(address, suggestion))
+        ) {
           this.modal.openModal(address, suggestions);
         } else {
           this.sendAddress(address);

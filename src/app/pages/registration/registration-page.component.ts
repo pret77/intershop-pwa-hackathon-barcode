@@ -84,9 +84,7 @@ export class RegistrationPageComponent implements OnInit, OnDestroy {
         .pipe(whenTruthy(), take(1), takeUntil(this.destroy$))
         .subscribe(({ data }) => {
           if (data) {
-            // TODO: Needs to be adapted to submit new address form value
-            this.form.value.address = data;
-            this.submitRegistrationForm();
+            this.onCreateWithSuggestion(data);
           }
         });
     } else {
@@ -95,12 +93,9 @@ export class RegistrationPageComponent implements OnInit, OnDestroy {
   }
 
   onCreateWithSuggestion(address: Address) {
-    (this.form.get('address').get('addressLine1') as AbstractControl).setValue(address.addressLine1);
-    (this.form.get('address').get('postalCode') as AbstractControl).setValue(address.postalCode);
-    (this.form.get('address').get('city') as AbstractControl).setValue(address.city);
-    if (this.form.get('address').get('mainDivisionCode')) {
-      (this.form.get('address').get('mainDivisionCode') as AbstractControl).setValue(address.mainDivisionCode);
-    }
+    Object.keys(this.form.get('address').value).forEach(key =>
+      (this.form.get('address').get(key) as AbstractControl).setValue(address[key as keyof Address])
+    );
     this.submitRegistrationForm();
   }
 
