@@ -164,7 +164,6 @@ describe('Address Doctor Api Service', () => {
     "firstName": "Patricia",
     "id": "0001"",
     "lastName": "Miller",
-    "mainDivision": "Nordrhein-Westfalen",
     "postalCode": "50667",
     "title": "Ms.",
     "urn": "urn:address:customer:JgEKAE8BA50AAAFgDtAd1LZU:1001",
