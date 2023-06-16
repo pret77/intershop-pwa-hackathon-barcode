@@ -160,7 +160,7 @@ describe('Address Doctor Api Service', () => {
 [
   {
     "addressLine1": "Theo-Burauen-Platz 65432",
-    "city": " Köln Altstadt-Nord",
+    "city": "Köln Altstadt-Nord",
     "firstName": "Patricia",
     "id": "0001"",
     "lastName": "Miller",
