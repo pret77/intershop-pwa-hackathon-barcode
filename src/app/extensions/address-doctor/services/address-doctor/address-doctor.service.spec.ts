@@ -9,7 +9,7 @@ import { StatePropertiesService } from 'ish-core/utils/state-transfer/state-prop
 
 import { AddressDoctorConfig } from '../../models/address-doctor/address-doctor-config.model';
 
-import { AddressDoctorApiService } from './address-doctor-api.service';
+import { AddressDoctorService } from './address-doctor.service';
 
 const mockAddresses = [
   {
@@ -118,8 +118,8 @@ const response = {
   ],
 };
 
-describe('Address Doctor Api Service', () => {
-  let addressDoctorApiService: AddressDoctorApiService;
+describe('Address Doctor Service', () => {
+  let addressDoctorService: AddressDoctorService;
   let controller: HttpTestingController;
   let statePropertiesService: StatePropertiesService;
 
@@ -129,7 +129,7 @@ describe('Address Doctor Api Service', () => {
       imports: [HttpClientTestingModule],
       providers: [{ provide: StatePropertiesService, useFactory: () => instance(statePropertiesService) }],
     });
-    addressDoctorApiService = TestBed.inject(AddressDoctorApiService);
+    addressDoctorService = TestBed.inject(AddressDoctorService);
 
     controller = TestBed.inject(HttpTestingController);
 
@@ -150,11 +150,11 @@ describe('Address Doctor Api Service', () => {
   });
 
   it('should be created', () => {
-    expect(addressDoctorApiService).toBeTruthy();
+    expect(addressDoctorService).toBeTruthy();
   });
 
   it('should always call underlying service config/start endpoint with product id', done => {
-    addressDoctorApiService.postAddress(mockAddresses[0]).subscribe({
+    addressDoctorService.postAddress(mockAddresses[0]).subscribe({
       next: data => {
         expect(data).toMatchInlineSnapshot(`
 [

@@ -1,6 +1,6 @@
 import { Address } from 'ish-core/models/address/address.model';
 
-import { AddressDoctorVariant } from './address-doctor-variant.interface';
+import { AddressDoctorVariant } from './address-doctor.interface';
 
 /**
  * Map incoming data from Address Doctor REST Api to ICM compliant addresses.

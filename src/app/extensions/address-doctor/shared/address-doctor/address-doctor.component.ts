@@ -6,6 +6,7 @@ import { Address } from 'ish-core/models/address/address.model';
 import { FeatureEventService } from 'ish-core/utils/feature-event-notifier/feature-event-notifier.service';
 import { GenerateLazyComponent } from 'ish-core/utils/module-loader/generate-lazy-component.decorator';
 import { whenPropertyHasValue } from 'ish-core/utils/operators';
+import { ModalOptions } from 'ish-shared/components/common/modal-dialog/modal-dialog.component';
 
 import { AddressDoctorFacade } from '../../facades/address-doctor.facade';
 import { AddressDoctorEvents } from '../../models/address-doctor/address-doctor-event.model';
@@ -19,7 +20,7 @@ import { AddressDoctorModalComponent } from '../address-doctor-modal/address-doc
 })
 @GenerateLazyComponent()
 export class AddressDoctorComponent implements OnDestroy, AfterViewInit {
-  @Input() size: string = undefined;
+  @Input() options: ModalOptions;
   // related address doctor modal
   @ViewChild('modal') modal: AddressDoctorModalComponent;
 

@@ -16,6 +16,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { Subject, takeUntil } from 'rxjs';
 
 import { Address } from 'ish-core/models/address/address.model';
+import { ModalOptions } from 'ish-shared/components/common/modal-dialog/modal-dialog.component';
 
 @Component({
   selector: 'ish-address-doctor-modal',
@@ -23,7 +24,7 @@ import { Address } from 'ish-core/models/address/address.model';
   changeDetection: ChangeDetectionStrategy.Default,
 })
 export class AddressDoctorModalComponent implements OnDestroy {
-  @Input() size: string = undefined;
+  @Input() options: ModalOptions;
   @Output() confirmAddress = new EventEmitter<Address>();
   @Output() hidden = new EventEmitter<boolean>();
   @ViewChild('template', { static: true }) modalDialogTemplate: TemplateRef<unknown>;
@@ -53,8 +54,7 @@ export class AddressDoctorModalComponent implements OnDestroy {
       address,
     };
 
-    const size = this.size;
-    this.ngbModalRef = this.ngbModal.open(this.modalDialogTemplate, { size });
+    this.ngbModalRef = this.ngbModal.open(this.modalDialogTemplate, this.options || { size: 'lg' });
     this.ngbModalRef.hidden.pipe(takeUntil(this.destroy$)).subscribe(() => {
       this.hidden.emit(true);
     });

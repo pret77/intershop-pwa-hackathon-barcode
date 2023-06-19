@@ -7,11 +7,11 @@ import { whenTruthy } from 'ish-core/utils/operators';
 import { StatePropertiesService } from 'ish-core/utils/state-transfer/state-properties.service';
 
 import { AddressDoctorConfig } from '../../models/address-doctor/address-doctor-config.model';
-import { AddressDoctorVariants } from '../../models/address-doctor/address-doctor-variant.interface';
+import { AddressDoctorVariants } from '../../models/address-doctor/address-doctor.interface';
 import { AddressDoctorMapper } from '../../models/address-doctor/address-doctor.mapper';
 
 @Injectable({ providedIn: 'root' })
-export class AddressDoctorApiService {
+export class AddressDoctorService {
   private http = inject(HttpClient);
   private statePropertiesService = inject(StatePropertiesService);
 
@@ -36,7 +36,7 @@ export class AddressDoctorApiService {
             return body.Response[0].Results;
           }),
           map(results => results.map(result => ({ ...address, ...AddressDoctorMapper.fromData(result.Variants[0]) }))),
-          // should return empty suggestions in case a error occurs
+          // should return empty suggestions in case an error occurs
           catchError(() => of([]))
         )
       )

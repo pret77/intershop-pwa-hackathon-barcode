@@ -68,7 +68,7 @@ export function whenFalsy<T>(): MonoTypeOperatorFunction<T> {
 }
 
 /**
- * stream wil fire only emissions when the current value T of the source$ stream provides the value V for property T[K]
+ * Stream will fire only emissions when the current value T of the source$ stream provides the value V for property T[K]
  */
 export function whenPropertyHasValue<T, K extends keyof T, V>(property: K, value: V) {
   return (source$: Observable<T>) =>

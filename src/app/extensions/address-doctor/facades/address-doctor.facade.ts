@@ -4,11 +4,11 @@ import { Observable, map, of, race, tap, timer } from 'rxjs';
 
 import { Address } from 'ish-core/models/address/address.model';
 
-import { AddressDoctorApiService } from '../services/address-doctor-api/address-doctor-api.service';
+import { AddressDoctorService } from '../services/address-doctor/address-doctor.service';
 
 @Injectable({ providedIn: 'root' })
 export class AddressDoctorFacade {
-  private addressDoctorApi = inject(AddressDoctorApiService);
+  private addressDoctorService = inject(AddressDoctorService);
 
   private lastAddressCheck: Address;
   private lastAddressCheckResult: Address[] = [];
@@ -20,11 +20,12 @@ export class AddressDoctorFacade {
 
     this.lastAddressCheck = address;
     return race(
-      this.addressDoctorApi.postAddress(address).pipe(
+      this.addressDoctorService.postAddress(address).pipe(
         tap(result => {
           this.lastAddressCheckResult = result;
         })
       ),
+      // if the address check takes longer than 5 seconds return with no suggestions
       timer(5000).pipe(map(() => []))
     );
   }

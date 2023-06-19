@@ -1,4 +1,3 @@
-/* eslint-disable ish-custom-rules/ordered-imports */
 import { inject } from '@angular/core';
 import { filter, take, takeUntil } from 'rxjs/operators';
 
