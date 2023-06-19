@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable, map, switchMap } from 'rxjs';
+import { EMPTY, Observable, catchError, map, of, switchMap, throwError } from 'rxjs';
 
 import { Address } from 'ish-core/models/address/address.model';
 import { whenTruthy } from 'ish-core/utils/operators';
@@ -29,8 +29,15 @@ export class AddressDoctorApiService {
       switchMap(({ url, body }) =>
         this.http.post(url, body).pipe(
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          map<any, AddressDoctorVariants[]>((body: any) => body.Response[0].Results),
-          map(results => results.map(result => ({ ...address, ...AddressDoctorMapper.fromData(result.Variants[0]) })))
+          map<any, AddressDoctorVariants[]>((body: any) => {
+            if (body?.Status !== 'Ok') {
+              return throwError(() => body?.StatusDescription);
+            }
+            return body.Response[0].Results;
+          }),
+          map(results => results.map(result => ({ ...address, ...AddressDoctorMapper.fromData(result.Variants[0]) }))),
+          // should return empty suggestions in case a error occurs
+          catchError(() => of([]))
         )
       )
     );

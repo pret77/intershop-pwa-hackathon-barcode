@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { isEqual } from 'lodash-es';
-import { Observable, of, tap } from 'rxjs';
+import { Observable, map, of, race, tap, timer } from 'rxjs';
 
 import { Address } from 'ish-core/models/address/address.model';
 
@@ -19,10 +19,13 @@ export class AddressDoctorFacade {
     }
 
     this.lastAddressCheck = address;
-    return this.addressDoctorApi.postAddress(address).pipe(
-      tap(result => {
-        this.lastAddressCheckResult = result;
-      })
+    return race(
+      this.addressDoctorApi.postAddress(address).pipe(
+        tap(result => {
+          this.lastAddressCheckResult = result;
+        })
+      ),
+      timer(5000).pipe(map(() => []))
     );
   }
 }
