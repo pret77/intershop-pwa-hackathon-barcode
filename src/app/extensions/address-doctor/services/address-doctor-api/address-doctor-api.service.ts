@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { EMPTY, Observable, catchError, map, of, switchMap, throwError } from 'rxjs';
+import { Observable, catchError, map, of, switchMap, throwError } from 'rxjs';
 
 import { Address } from 'ish-core/models/address/address.model';
 import { whenTruthy } from 'ish-core/utils/operators';
