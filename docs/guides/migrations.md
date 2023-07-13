@@ -7,6 +7,12 @@ kb_sync_latest_only
 
 # Migrations
 
+## 4.1 to 5.0
+
+The project has been updated to work with Angular 16.
+The `ngcc` command has been removed from the package.json because it is no longer supported in Angular 16. 
+
+
 ## 4.0 to 4.1
 
 The Intershop PWA now uses Node.js 18.16.0 LTS with the corresponding npm version 9.5.1 to resolve an issue with Azure Docker deployments (see #1416).
