@@ -13,7 +13,8 @@ const registerLintAtEnd = once((root: string) => {
         console.log('LINTING', lintFiles.length, lintFiles.length === 1 ? 'file' : 'files');
 
         execSync(`npx prettier --write --loglevel warn ${lintFiles.join(' ')}`, { cwd: root });
-        execSync(`npx eslint --fix ${lintFiles.join(' ')}`, { cwd: root });
+        // ToDo: enable this code again
+        //  execSync(`npx eslint --fix ${lintFiles.join(' ')}`, { cwd: root });
       }
     } else {
       console.log('LINTING skipped for CI=true');
