@@ -10,8 +10,9 @@ kb_sync_latest_only
 ## 4.1 to 5.0
 
 The project has been updated to work with Angular 16.
-The `ngcc` command has been removed from the package.json because it is no longer supported in Angular 16. 
-
+Besides this a lot of other dependencies (NgRx, Typescript) have also been updated.
+The `ngcc` command has been removed from the package.json because it is no longer supported and necessary in Angular 16.
+The spelling of the OCI punchout actions has changed due to an changed naming schema of the ngrx action creator functions.
 
 ## 4.0 to 4.1
 
