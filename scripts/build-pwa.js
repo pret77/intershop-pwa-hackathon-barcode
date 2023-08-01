@@ -16,7 +16,10 @@ function removeServiceWorkerCacheCheck(args) {
   } else {
     // get default outputPath from angular.json
     const angularJson = JSON.parse(fs.readFileSync('./angular.json', { encoding: 'utf-8' }));
-    outputPath = angularJson.projects[angularJson.defaultProject].architect.build.options.outputPath;
+
+    outputPath =
+      angularJson.projects[Object.keys(angularJson.projects).find(project => angularJson.projects[project].root === '')]
+        .architect.build.options.outputPath;
   }
 
   const serviceWorkerScript = path.join(outputPath, 'ngsw-worker.js');
