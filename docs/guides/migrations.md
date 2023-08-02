@@ -14,6 +14,7 @@ Besides this a lot of other dependencies (NgRx, Typescript) have also been updat
 The `ngcc` command has been removed from the package.json because it is no longer supported and necessary in Angular 16.
 The spelling of the OCI punchout actions has changed due to a changed naming schema of the ngrx action creator functions.
 Because 'defaultProject' is not a valid option in the angular.json any more it has been removed and the root project (project with an empty root) is used instead.
+We enabled the [Angular Hydration](https://angular.io/guide/hydration) to improve the performance and avoid the UI flickering when a page is rendered - please note, that this feature is still in developer preview and may also have some constraints.
 
 ## 4.0 to 4.1
 
