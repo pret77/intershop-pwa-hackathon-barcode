@@ -820,8 +820,7 @@
         "rxjs-angular/prefer-takeuntil": [
           "error",
           {
-            "checkDestroy": true,
-            "checkComplete": true,
+            "alias": ["takeUntilDestroyed"],
             "checkDecorators": ["Component", "Pipe", "Directive"]
           }
         ],
@@ -850,7 +849,12 @@
         "rxjs/no-unsafe-catch": "error",
         "rxjs/no-unsafe-subject-next": "error",
         "rxjs/no-unsafe-switchmap": "error",
-        "rxjs/no-unsafe-takeuntil": "error",
+        "rxjs/no-unsafe-takeuntil": [
+          "error",
+          {
+            "alias": ["takeUntilDestroyed"]
+          }
+        ],
         "unicorn/no-null": [
           "warn",
           {
