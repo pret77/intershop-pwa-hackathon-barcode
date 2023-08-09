@@ -395,7 +395,8 @@
         "ish-custom-rules/no-testbed-with-then": "error",
         "ish-custom-rules/no-var-before-return": "warn",
         "ish-custom-rules/ordered-imports": "warn",
-        "ish-custom-rules/private-destroy-field": "error",
+        "ish-custom-rules/private-destroy-field": "warn",
+        "ish-custom-rules/private-destroyRef-field": "error",
         "ish-custom-rules/project-structure": [
           "warn",
           {
