@@ -10,48 +10,30 @@ kb_sync_latest_only
 The goal of accessibility is to unlock the full potential of the Web and enable people with disabilities to participate equally.
 The `@angular-eslint` repo contains a number of linting rules that can help enforce accessibility best practices in Angular component templates.
 
-The accessibility rules that are enabled in the Intershop PWA are listed/described in this document and configured in the `.eslintrc.json` file of the project.
+Most of the accessibility rules that are enabled in the Intershop PWA are contained in the plugin `@angular-eslint/template/accessibility` that is configured in the `.eslintrc.json` file of the project.
 To check whether the rules are followed in your custom code or not, run `npm run lint`.
 
-## General Rules
+## General
 
-```
-@angular-eslint/template/accessibility-valid-aria
-```
+Generally it is checked if valid `aria-*` and `role=*` attributes are used and that every necessary element is reachable with the keyboard, and that an action (like pressing enter) can be performed on them.
 
-This rule makes sure that all `aria-*` attributes used are valid.
-The rule will fail if a non-existent `aria-*` attribute is used, or a valid `aria-*` attribute is given an unexpected value.
+## Rules
 
-## Content Rules
+Only some individual rules are written down here.
+For reference which rules are currently included, please check the official repository:
 
-```
-@angular-eslint/template/accessibility-alt-text
-```
+- [ESLint-Plugin Accessibility Rules](https://github.com/angular-eslint/angular-eslint/blob/main/packages/eslint-plugin-template/src/configs/accessibility.json)
 
-```
-@angular-eslint/template/accessibility-elements-content
-```
+If an unreachable element has to be made reachable by providing a `tabindex`, the index should never be a positive number, only `0` (element is tab focusable) or `-1` (element is not tab focusable).
+The tab-order has to be determined by the HTML-structure, not by the index.
 
-## Interactivity Rules
+<!-- titles instead of aria-attributes? -->
+<!-- aria-labels as translation-keys? -->
+<!-- use native html-elements instead of <div role=* />? -->
 
-The navigation is the most important way to find and access the different contents of the website.
-For this reason, it is essential that the navigation is accessible.
-
-```
-@angular-eslint/template/no-positive-tabindex
-```
-
-This rule ensures that `tabindex` is set to `0` (element is tab focusable) or `-1` (element is not tab focusable), and not a positive value that interferes with the automatic tab order of elements.
-
-> **How to fix problems with unreachable elements**
->
-> To make HTML elements tab-focusable that are not reachable by default (like `<a>` tags, `<button>`, etc.), `tabindex="0"` can be added to most HTML tags like `<div>` or `<span>`.
-
-```
-@angular-eslint/template/click-events-have-key-events
-```
-
-This rule ensures, that elements with click event handlers also handle at least one key event (keyup, keydown or keypress).
+<!-- ------------------------------------------------------------------------------------------------------------------------------------------------  -->
+<!-- ------------------------------------------------------------------------------------------------------------------------------------------------  -->
+<!-- ------------------------------------------------------------------------------------------------------------------------------------------------  -->
 
 > **How to fix `click-events-have-key-events` problems**
 >
@@ -60,15 +42,6 @@ This rule ensures, that elements with click event handlers also handle at least 
 >
 > Other HTML elements (`<div>`, `<span>`, etc.) with a `click()` event that report this ESLint error can be fixed by adding a `(keydown.enter)` event that should be assigned with the `click()` event's method.
 > In addition a `tabindex="0"` needs to be added to such elements to make them tab focusable.
->
-> The outcome is testable when navigating the page in the browser with the tabulator key.
-> The clickable areas will be focused and a click event is triggered by pressing the Enter key.
-
-```
-@angular-eslint/template/mouse-events-have-key-events
-```
-
-Requires any element with a `mouseout` event handler to also handle `blur` events, and any element with a `mouseover` event handler to also handle `focus` events.
 
 ## Form Submission using the key "Enter"
 
