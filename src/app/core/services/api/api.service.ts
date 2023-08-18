@@ -144,18 +144,10 @@ export class ApiService {
       of('/'),
       of(path.includes('/') ? path.split('/')[0] : path),
       // pgid
-      iif(
-        () => !!apiToken,
+      this.store.pipe(
+        select(getPGID),
         // when an apiToken is available, then the pgid has to be set when the options are enabled
-        of(true).pipe(
-          withLatestFrom(
-            this.store.pipe(select(getPGID), options?.sendPGID || options?.sendSPGID ? whenTruthy() : identity)
-          ),
-          map(([, pgid]) => pgid)
-        ),
-        // when no apiToken is available, the stream does not to wait for a truthy pgid
-        this.store.pipe(select(getPGID))
-      ).pipe(
+        apiToken && (options?.sendPGID || options?.sendSPGID) ? whenTruthy() : identity,
         map(pgid => (options?.sendPGID && pgid ? `;pgid=${pgid}` : options?.sendSPGID && pgid ? `;spgid=${pgid}` : ''))
       ),
       // remaining path
