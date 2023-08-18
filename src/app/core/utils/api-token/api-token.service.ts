@@ -74,7 +74,7 @@ export class ApiTokenService {
 
   constructor(private cookiesService: CookiesService, private store: Store, private appRef: ApplicationRef) {
     // setup initial values
-    const initialCookie = this.parseCookie();
+    const initialCookie = this.cookiesService.getApiTokenCookie();
     this.initialCookie$ = new BehaviorSubject<ApiTokenCookie>(!SSR ? initialCookie : undefined);
     this.apiToken$ = new BehaviorSubject<string>(initialCookie?.apiToken);
 
@@ -106,11 +106,6 @@ export class ApiTokenService {
       // initialize restore$ mechanism when apiToken cookie is created outside of current PWA context
       this.tokenCreatedOnAnotherTab$().subscribe(noop);
     }
-  }
-
-  hasUserApiTokenCookie() {
-    const apiTokenCookie = this.parseCookie();
-    return apiTokenCookie?.type === 'user' && !apiTokenCookie?.isAnonymous;
   }
 
   restore$(types: ApiTokenCookieType[] = ['user', 'order']): Observable<boolean> {
@@ -219,7 +214,7 @@ export class ApiTokenService {
   }
 
   private invalidateApiToken() {
-    const cookie = this.parseCookie();
+    const cookie = this.cookiesService.getApiTokenCookie();
 
     this.removeApiToken();
 
@@ -267,7 +262,7 @@ export class ApiTokenService {
       first(),
       mergeMap(() =>
         interval(1000).pipe(
-          map(() => this.parseCookie()),
+          map(() => this.cookiesService.getApiTokenCookie()),
           pairwise(),
           distinctUntilChanged((prev, curr) => isEqual(prev, curr))
         )
@@ -365,17 +360,5 @@ export class ApiTokenService {
           }
         })
       );
-  }
-
-  private parseCookie(): ApiTokenCookie {
-    const cookieContent = this.cookiesService.get('apiToken');
-    if (cookieContent) {
-      try {
-        return JSON.parse(cookieContent);
-      } catch (err) {
-        // ignore
-      }
-    }
-    return;
   }
 }

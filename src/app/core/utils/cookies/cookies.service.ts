@@ -5,6 +5,7 @@ import { TransferState } from '@angular/platform-browser';
 import { COOKIE_CONSENT_OPTIONS } from 'ish-core/configurations/injection-keys';
 import { COOKIE_CONSENT_VERSION } from 'ish-core/configurations/state-keys';
 import { CookieConsentSettings } from 'ish-core/models/cookies/cookies.model';
+import { ApiTokenCookie } from 'ish-core/utils/api-token/api-token.service';
 import { browserNameVersion } from 'ish-core/utils/browser-detection';
 import { InjectSingle } from 'ish-core/utils/injection';
 
@@ -79,6 +80,22 @@ export class CookiesService {
     } else {
       return false;
     }
+  }
+
+  getApiTokenCookie(): ApiTokenCookie {
+    if (!SSR) {
+      try {
+        return JSON.parse(this.get('apiToken') || 'null');
+      } catch (err) {
+        // ignore
+      }
+    }
+    return;
+  }
+
+  hasUserApiTokenCookie() {
+    const apiTokenCookie = this.getApiTokenCookie();
+    return apiTokenCookie?.type === 'user' && !apiTokenCookie?.isAnonymous;
   }
 
   /**
