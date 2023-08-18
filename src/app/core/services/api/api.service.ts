@@ -12,7 +12,9 @@ import {
   identity,
   iif,
   of,
+  race,
   throwError,
+  timer,
 } from 'rxjs';
 import { catchError, concatMap, filter, first, map, switchMap, take, withLatestFrom } from 'rxjs/operators';
 
@@ -140,12 +142,17 @@ export class ApiService {
       of('/'),
       of(path.includes('/') ? path.split('/')[0] : path),
       // pgid
-      this.store.pipe(
-        select(getPGID),
-        // when a user apiToken is available, then the pgid has to be set when the options are enabled
-        this.cookiesService.hasUserApiTokenCookie() && (options?.sendPGID || options?.sendSPGID)
-          ? whenTruthy()
-          : identity,
+      race(
+        this.store.pipe(
+          select(getPGID),
+          // when an apiToken is available, then the pgid has to be set when the options are enabled
+          this.cookiesService.hasUserApiTokenCookie() && (options?.sendPGID || options?.sendSPGID)
+            ? whenTruthy()
+            : identity
+        ),
+        // on timeout current pgid will be selected
+        timer(3000).pipe(switchMap(() => this.store.pipe(select(getPGID))))
+      ).pipe(
         map(pgid => (options?.sendPGID && pgid ? `;pgid=${pgid}` : options?.sendSPGID && pgid ? `;spgid=${pgid}` : ''))
       ),
       // remaining path
