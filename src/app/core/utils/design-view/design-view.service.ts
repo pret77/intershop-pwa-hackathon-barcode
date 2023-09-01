@@ -1,8 +1,10 @@
 import { ApplicationRef, Inject, Injectable } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
+import { Store, select } from '@ngrx/store';
 import { filter, first, fromEvent, map, switchMap } from 'rxjs';
 
 import { IAP_BASE_URL } from 'ish-core/configurations/injection-keys';
+import { getCurrentLocale } from 'ish-core/store/core/configuration';
 import { DomService } from 'ish-core/utils/dom/dom.service';
 import { InjectSingle } from 'ish-core/utils/injection';
 import { whenTruthy } from 'ish-core/utils/operators';
@@ -16,7 +18,8 @@ export class DesignViewService {
     @Inject(IAP_BASE_URL) private iapBaseURL: InjectSingle<typeof IAP_BASE_URL>,
     private router: Router,
     private appRef: ApplicationRef,
-    private domService: DomService
+    private domService: DomService,
+    private store: Store
   ) {
     this.iapBaseURL = this.iapBaseURL?.replace(/\/$/, '');
     this.init();
@@ -101,6 +104,17 @@ export class DesignViewService {
       this.messageToHost({ type: 'dv-clientStable' });
       this.applyHierarchyHighlighting();
     });
+
+    // send `dv-clientLocale` event when application is stable and the current application locale was determined
+    stable$
+      .pipe(
+        switchMap(() =>
+          this.store.pipe(select(getCurrentLocale), whenTruthy()).pipe(
+            first() // PWA reloads after each locale change, only one locale is active during runtime
+          )
+        )
+      )
+      .subscribe(locale => this.messageToHost({ type: 'dv-clientLocale', payload: { locale } }));
   }
 
   /**
