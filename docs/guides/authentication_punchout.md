@@ -30,9 +30,8 @@ identityProviders: {
 For production, this configuration should be provided to the SSR process via environment variables (see [Building and Running Server-Side Rendering][ssr-startup]).
 The usage of identity providers can also be set in the multi-channel configuration (see [Building and Running nginx Docker Image][nginx-startup]).
 
-Additionally, the PWA can be configured to use the punchout identity provider only, when the user enters the punchout route.
-In that case the nginx should be configured with the `OVERRIDE_IDENTITY_PROVIDERS` environment variable (see [Override Identity Providers by Path][nginx-startup]).
-Nevertheless, the SSR process needs to be provided with the punchout identity provider configuration.
+Additionally, the PWA is configured to use the punchout identity provider only, when the user enters the /punchout route.
+This is configured by the injected `IDENTITY_PROVIDER_IMPLEMENTOR` [injection token](../../src/app/extensions/punchout/identity-provider/punchout-identity-provider.module.ts).
 
 ```yaml
 pwa:
@@ -40,13 +39,6 @@ pwa:
     IDENTITY_PROVIDERS: |
       Punchout:
         type: PUNCHOUT
-
-nginx:
-  environment:
-    OVERRIDE_IDENTITY_PROVIDERS: |
-      .+:
-        - path: /punchout
-          type: Punchout
 ```
 
 ## Login
