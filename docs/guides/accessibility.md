@@ -7,6 +7,20 @@ kb_sync_latest_only
 
 # Accessibility
 
+- [Accessibility](#accessibility)
+  - [General](#general)
+    - [Attributes and Roles](#attributes-and-roles)
+    - [Titles instead of ARIA-Attributes](#titles-instead-of-aria-attributes)
+    - [Usage of native HTML-Elements](#usage-of-native-html-elements)
+  - [ESLint Rules](#eslint-rules)
+    - [Accessibility Plugin](#accessibility-plugin)
+    - [Additional Rules](#additional-rules)
+  - [Project specific Applications](#project-specific-applications)
+    - [How to fix `click-events-have-key-events` problems](#how-to-fix-click-events-have-key-events-problems)
+    - [Form Submission using the key "Enter"](#form-submission-using-the-key-enter)
+    - [Form submission in dialogs](#form-submission-in-dialogs)
+  - [Further References](#further-references)
+
 The goal of accessibility is to unlock the full potential of the Web and enable people with disabilities to participate equally.
 The `@angular-eslint` repo contains a number of linting rules that can help enforce accessibility best practices in Angular component templates.
 
@@ -15,35 +29,94 @@ To check whether the rules are followed in your custom code or not, run `npm run
 
 ## General
 
+### Attributes and Roles
+
 Generally it is checked if valid `aria-*` and `role=*` attributes are used and that every necessary element is reachable with the keyboard, and that an action (like pressing enter) can be performed on them.
 
-## Rules
+### Titles instead of ARIA-Attributes
 
-Only some individual rules are written down here.
-For reference which rules are currently included, please check the official repository:
+If an element has to be made more descriptive by adding a title-attribute or an aria-label, we decided to use the title and not the label, because a title provides visual feedback and can also be read as a label by screen-readers.
+
+:x: **Wrong HTML structure, title and aria-label would be read by a screen-reader**
+
+```html
+<button [title]="Close" [aria-label]="close">
+  <span>x</span>
+</button>
+```
+
+:warning: **Only use when no title is needed**
+
+```html
+<button [title]="Close" [aria-label]="close">
+  <span>x</span>
+</button>
+```
+
+:heavy_check_mark: **Preferred HTML structure**
+
+```html
+<button [title]="Close">
+  <span>x</span>
+</button>
+```
+
+### Usage of native HTML-Elements
+
+It is generally advised to use native HTML-elements instead of giving roles to container-elements like a `<div>`, because native elements already bring most accessibility functionalities with them, like tab-focus and confirm by pressing enter.
+If, for example, instead of a `<button>` a `<div role="button">` is used, the functionality of pressing enter to activate the button has to be manually implemented via code.
+
+:warning: **Don't assign roles to HTML-elements that exist natively**
+
+```html
+<div role="button">
+  <span>x</span>
+</div>
+```
+
+:heavy_check_mark: **Use native HTML-elements if they exist**
+
+```html
+<button [title]="Close">
+  <span>x</span>
+</button>
+```
+
+## ESLint Rules
+
+ESLint provides a plugin that includes most of the necessary accessibility-rules.
+Only some individual rules that do not come with this plugin are specifically written down here.
+
+### Accessibility Plugin
+
+```
+plugin:@angular-eslint/template/accessibility
+```
+
+For reference on which rules the plugin currently includes, please check the official repository:
 
 - [ESLint-Plugin Accessibility Rules](https://github.com/angular-eslint/angular-eslint/blob/main/packages/eslint-plugin-template/src/configs/accessibility.json)
+
+### Additional Rules
+
+```
+@angular-eslint/template/no-positive-tabindex
+```
 
 If an unreachable element has to be made reachable by providing a `tabindex`, the index should never be a positive number, only `0` (element is tab focusable) or `-1` (element is not tab focusable).
 The tab-order has to be determined by the HTML-structure, not by the index.
 
-<!-- titles instead of aria-attributes? -->
-<!-- aria-labels as translation-keys? -->
-<!-- use native html-elements instead of <div role=* />? -->
+## Project specific Applications
 
-<!-- ------------------------------------------------------------------------------------------------------------------------------------------------  -->
-<!-- ------------------------------------------------------------------------------------------------------------------------------------------------  -->
-<!-- ------------------------------------------------------------------------------------------------------------------------------------------------  -->
+### How to fix `click-events-have-key-events` problems
 
-> **How to fix `click-events-have-key-events` problems**
->
-> To fix this, all of the `<a>` tags in the HTML files should have a `routerLink` attribute.
-> If adding a meaningful `routerLink` is not possible, `[routerLink]="[]"` should be added to fix the error.
->
-> Other HTML elements (`<div>`, `<span>`, etc.) with a `click()` event that report this ESLint error can be fixed by adding a `(keydown.enter)` event that should be assigned with the `click()` event's method.
-> In addition a `tabindex="0"` needs to be added to such elements to make them tab focusable.
+To fix this, all of the `<a>` tags in the HTML files should have a `routerLink` attribute.
+If adding a meaningful `routerLink` is not possible, `[routerLink]="[]"` should be added to fix the error.
 
-## Form Submission using the key "Enter"
+Other HTML elements (`<div>`, `<span>`, etc.) with a `click()` event that report this ESLint error can be fixed by adding a `(keydown.enter)` event that should be assigned with the `click()` event's method.
+In addition, a `tabindex="0"` needs to be added to such elements to make them tab focusable.
+
+### Form Submission using the key "Enter"
 
 Implicit form submission using the "Enter" key is vital to assistive technologies, see also [HTML5 specification](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#implicit-submission).
 Therefore, the `form` tag has to include an `input` of `type="submit"`, for example
