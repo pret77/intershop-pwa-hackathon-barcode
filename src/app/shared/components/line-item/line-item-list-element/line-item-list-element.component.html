@@ -157,4 +157,9 @@
     <!-- Gift -->
     <div *ngIf="pli.isFreeGift" class="list-item-promo">{{ 'checkout.pli.freegift.text' | translate }}</div>
   </div>
+
+  <!-- edit extended line item content-->
+  <div *ngIf="isFeatureEnabled" class="extended-item-box col offset-md-2">
+    <ish-line-item-extended-content [lineItem]="pli" [editable]="editable"></ish-line-item-extended-content>
+  </div>
 </div>

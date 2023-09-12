@@ -10,6 +10,7 @@ import { instance, mock, when } from 'ts-mockito';
 import { ProductContextDirective } from 'ish-core/directives/product-context.directive';
 import { CheckoutFacade } from 'ish-core/facades/checkout.facade';
 import { ProductContextFacade } from 'ish-core/facades/product-context.facade';
+import { FeatureToggleService } from 'ish-core/feature-toggle.module';
 import { PricePipe } from 'ish-core/models/price/price.pipe';
 import { ProductView } from 'ish-core/models/product-view/product-view.model';
 import { ServerSettingPipe } from 'ish-core/pipes/server-setting.pipe';
@@ -36,11 +37,14 @@ describe('Line Item List Element Component', () => {
   let fixture: ComponentFixture<LineItemListElementComponent>;
   let element: HTMLElement;
   let context: ProductContextFacade;
+  let featureToggleService: FeatureToggleService;
 
   async function prepareTestbed(serverSetting: boolean) {
     context = mock(ProductContextFacade);
+    featureToggleService = mock(FeatureToggleService);
     when(context.select('product')).thenReturn(of({} as ProductView));
     when(context.select('quantity')).thenReturn(EMPTY);
+    when(featureToggleService.enabled('extendedLineItemContent')).thenReturn(false);
 
     await TestBed.configureTestingModule({
       imports: [RouterTestingModule, TranslateModule.forRoot()],
@@ -66,6 +70,7 @@ describe('Line Item List Element Component', () => {
       ],
       providers: [
         { provide: CheckoutFacade, useFactory: () => instance(mock(CheckoutFacade)) },
+        { provide: FeatureToggleService, useFactory: () => instance(featureToggleService) },
         { provide: ProductContextFacade, useFactory: () => instance(context) },
       ],
     }).compileComponents();

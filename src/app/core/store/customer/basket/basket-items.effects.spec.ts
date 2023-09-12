@@ -293,10 +293,13 @@ describe('Basket Items Effects', () => {
       const payload = {
         lineItemUpdates: [
           {
+            customerProductID: 'testProductID',
+            partialOrderNo: 'partialTestOrderID',
             itemId: 'BIID',
             quantity: 2,
           },
           {
+            customerProductID: 'testProductID',
             itemId: 'BIID',
             quantity: 3,
           },
@@ -315,6 +318,8 @@ describe('Basket Items Effects', () => {
           [
             "BIID",
             {
+              "customerProductID": "testProductID",
+              "partialOrderNo": "partialTestOrderID",
               "product": undefined,
               "quantity": {
                 "unit": undefined,
@@ -327,6 +332,8 @@ describe('Basket Items Effects', () => {
           [
             "BIID",
             {
+              "customerProductID": "testProductID",
+              "partialOrderNo": undefined,
               "product": undefined,
               "quantity": {
                 "unit": undefined,
@@ -339,6 +346,8 @@ describe('Basket Items Effects', () => {
           [
             "BIID",
             {
+              "customerProductID": undefined,
+              "partialOrderNo": undefined,
               "product": undefined,
               "quantity": {
                 "unit": undefined,

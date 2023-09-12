@@ -40,7 +40,12 @@ export type BasketUpdateType =
   | { messageToMerchant: string };
 
 export type BasketItemUpdateType =
-  | { quantity?: { value: number; unit: string }; product?: string }
+  | {
+      quantity?: { value: number; unit: string };
+      product?: string;
+      partialOrderNo?: string;
+      customerProductID?: string;
+    }
   | { shippingMethod?: { id: string } }
   | { desiredDelivery?: string }
   | { calculated: boolean };
