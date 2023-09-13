@@ -1,12 +1,17 @@
 <div class="line-item-attributes">
   <ng-container *ngIf="!displayInputFields(); else inputFields">
-    <span class="line-item-attributes-info span-separator">{{ 'line-item.partialOrderNo.label' | translate }}</span>
-    <span>{{ lineItem.partialOrderNo }}</span
-    ><br />
-
-    <span class="line-item-attributes-info span-separator">{{ 'line-item.customerProductID.label' | translate }}</span>
-    <span>{{ lineItem.customerProductID }}</span>
-    <br />
+    <div *ngIf="lineItem.partialOrderNo">
+      <span class="line-item-attributes-info span-separator">{{ 'line-item.partialOrderNo.label' | translate }}</span>
+      <span>{{ lineItem.partialOrderNo }}</span
+      ><br />
+    </div>
+    <div *ngIf="lineItem.customerProductID">
+      <span class="line-item-attributes-info span-separator">{{
+        'line-item.customerProductID.label' | translate
+      }}</span>
+      <span>{{ lineItem.customerProductID }}</span>
+      <br />
+    </div>
     <a
       *ngIf="editable"
       [routerLink]="[]"
@@ -26,6 +31,14 @@
             <button type="submit" class="btn btn-primary">
               {{ 'line-item-attribute.apply.button.label' | translate }}
             </button>
+            <a
+              *ngIf="!cancelDisabled()"
+              class="btn btn-secondary"
+              [routerLink]=""
+              (click)="closeForm()"
+              data-testing-id="extended-attributes-form-cancel"
+              >{{ 'account.cancel.link' | translate }}</a
+            >
           </div>
         </div>
       </form>

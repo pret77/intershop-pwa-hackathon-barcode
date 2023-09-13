@@ -59,8 +59,7 @@ export class LineItemExtendedContentComponent implements OnInit {
 
   displayInputFields() {
     return (
-      this.lineItem.partialOrderNo === undefined ||
-      this.lineItem.customerProductID === undefined ||
+      (this.lineItem.partialOrderNo === undefined && this.lineItem.customerProductID === undefined) ||
       this.forceCustomAttributeChange
     );
   }
@@ -77,5 +76,13 @@ export class LineItemExtendedContentComponent implements OnInit {
       partialOrderNo: this.model.partialOrderNo,
     });
     this.forceCustomAttributeChange = false;
+  }
+
+  closeForm() {
+    this.forceCustomAttributeChange = false;
+  }
+
+  cancelDisabled() {
+    return this.lineItem.partialOrderNo === undefined && this.lineItem.customerProductID === undefined;
   }
 }
