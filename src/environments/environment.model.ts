@@ -139,9 +139,6 @@ export interface Environment {
    * - 'stable': only fetch prices once per application lifetime
    */
   priceUpdate: 'stable' | 'always';
-
-  // URL of the IAP for storefront editing
-  iapBaseURL?: string;
 }
 
 export const ENVIRONMENT_DEFAULTS: Omit<Environment, 'icmChannel'> = {
@@ -208,7 +205,4 @@ export const ENVIRONMENT_DEFAULTS: Omit<Environment, 'icmChannel'> = {
     tacton: 'forever',
   },
   priceUpdate: 'always',
-
-  /* STOREFRONT EDITING IAP URL */
-  iapBaseURL: 'http://localhost:4200',
 };

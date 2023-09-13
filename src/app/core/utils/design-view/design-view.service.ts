@@ -1,12 +1,10 @@
-import { ApplicationRef, Inject, Injectable } from '@angular/core';
+import { ApplicationRef, Injectable } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { Store, select } from '@ngrx/store';
 import { filter, first, fromEvent, map, switchMap } from 'rxjs';
 
-import { IAP_BASE_URL } from 'ish-core/configurations/injection-keys';
 import { getCurrentLocale } from 'ish-core/store/core/configuration';
 import { DomService } from 'ish-core/utils/dom/dom.service';
-import { InjectSingle } from 'ish-core/utils/injection';
 import { whenTruthy } from 'ish-core/utils/operators';
 import { StorefrontEditingMessage } from 'ish-core/utils/preview/preview.service';
 
@@ -15,23 +13,22 @@ export class DesignViewService {
   private allowedHostMessageTypes = ['dv-clientRefresh'];
 
   constructor(
-    @Inject(IAP_BASE_URL) private iapBaseURL: InjectSingle<typeof IAP_BASE_URL>,
     private router: Router,
     private appRef: ApplicationRef,
     private domService: DomService,
     private store: Store
   ) {
-    this.iapBaseURL = this.iapBaseURL?.replace(/\/$/, '');
     this.init();
   }
 
   /**
    * Send a message to the host window.
+   * Send the message to any host since the PWA is not supposed to know a fixed IAP URL (we are not sending secrets).
    *
    * @param message The message to send to the host (including type and payload)
    */
   messageToHost(message: StorefrontEditingMessage) {
-    window.parent.postMessage(message, this.iapBaseURL);
+    window.parent.postMessage(message, '*');
   }
 
   /**
@@ -68,12 +65,7 @@ export class DesignViewService {
   private listenToHostMessages() {
     fromEvent<MessageEvent>(window, 'message')
       .pipe(
-        filter(
-          e =>
-            e.origin === this.iapBaseURL &&
-            e.data.hasOwnProperty('type') &&
-            this.allowedHostMessageTypes.includes(e.data.type)
-        ),
+        filter(e => e.data.hasOwnProperty('type') && this.allowedHostMessageTypes.includes(e.data.type)),
         map(message => message.data)
       )
       .subscribe(message => this.handleHostMessage(message));
