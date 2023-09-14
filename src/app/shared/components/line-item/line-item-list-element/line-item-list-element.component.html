@@ -24,6 +24,8 @@
       <ish-product-variation-display></ish-product-variation-display>
       <!-- Product Bundles -->
       <ish-product-bundle-display></ish-product-bundle-display>
+      <!-- Extended Attributes -->
+      <ish-line-item-extended-content-display [lineItem]="pli"></ish-line-item-extended-content-display>
 
       <!-- switch by lineItemViewType -->
       <ng-container [ngSwitch]="lineItemViewType">
@@ -159,7 +161,7 @@
   </div>
 
   <!-- edit extended line item content-->
-  <div *ngIf="isFeatureEnabled" class="extended-item-box col offset-md-2">
-    <ish-line-item-extended-content [lineItem]="pli" [editable]="editable"></ish-line-item-extended-content>
+  <div *ishFeature="'extendedLineItemContent'" class="extended-item-box col offset-2">
+    <ish-line-item-extended-content-edit [lineItem]="pli" *ngIf="editable"></ish-line-item-extended-content-edit>
   </div>
 </div>

@@ -11,20 +11,22 @@ import { OrderLineItem } from 'ish-core/models/order/order.model';
  * and customerProductID. ALso editing of this attributes are possible with this component.
  */
 @Component({
-  selector: 'ish-line-item-extended-content',
-  templateUrl: './line-item-extended-content.component.html',
+  selector: 'ish-line-item-extended-content-edit',
+  templateUrl: './line-item-extended-content-edit.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LineItemExtendedContentComponent implements OnInit {
+export class LineItemExtendedContentEditComponent implements OnInit {
   @Input() lineItem: Partial<LineItemView & OrderLineItem>;
-  @Input() editable = true;
-  model: { partialOrderNo: string; customerProductID: string };
 
-  forceCustomAttributeChange = false;
+  model: { partialOrderNo: string; customerProductID: string };
   fields: FormlyFieldConfig[];
   extendedAttributesForm = new FormGroup({});
+  showExtendAttributeForm = false;
+  checkoutFacade: CheckoutFacade;
 
-  constructor(private checkoutFacade: CheckoutFacade) {}
+  constructor(cF: CheckoutFacade) {
+    this.checkoutFacade = cF;
+  }
 
   ngOnInit() {
     this.fields = this.getFields();
@@ -43,6 +45,7 @@ export class LineItemExtendedContentComponent implements OnInit {
           labelClass: 'col-md-4',
           fieldClass: 'col-md-8',
           label: 'line-item.partialOrderNo.label',
+          placeholder: 'line-item.partialOrderNo.placeholder',
         },
       },
       {
@@ -52,20 +55,10 @@ export class LineItemExtendedContentComponent implements OnInit {
           labelClass: 'col-md-4',
           fieldClass: 'col-md-8',
           label: 'line-item.customerProductID.label',
+          placeholder: 'line-item.customerProductID.placeholder',
         },
       },
     ];
-  }
-
-  displayInputFields() {
-    return (
-      (this.lineItem.partialOrderNo === undefined && this.lineItem.customerProductID === undefined) ||
-      this.forceCustomAttributeChange
-    );
-  }
-
-  requestChangeableFields() {
-    this.forceCustomAttributeChange = true;
   }
 
   onSubmit() {
@@ -75,14 +68,10 @@ export class LineItemExtendedContentComponent implements OnInit {
       customerProductID: this.model.customerProductID,
       partialOrderNo: this.model.partialOrderNo,
     });
-    this.forceCustomAttributeChange = false;
+    this.openExtendAttributeForm(false);
   }
 
-  closeForm() {
-    this.forceCustomAttributeChange = false;
-  }
-
-  cancelDisabled() {
-    return this.lineItem.partialOrderNo === undefined && this.lineItem.customerProductID === undefined;
+  openExtendAttributeForm(value: boolean) {
+    this.showExtendAttributeForm = value;
   }
 }

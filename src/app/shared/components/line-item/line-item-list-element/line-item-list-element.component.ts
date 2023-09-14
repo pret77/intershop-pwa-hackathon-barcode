@@ -3,7 +3,6 @@ import { isEqual } from 'lodash-es';
 
 import { CheckoutFacade } from 'ish-core/facades/checkout.facade';
 import { ProductContextFacade } from 'ish-core/facades/product-context.facade';
-import { FeatureToggleService } from 'ish-core/feature-toggle.module';
 import { LineItemUpdate } from 'ish-core/models/line-item-update/line-item-update.model';
 import { LineItemView } from 'ish-core/models/line-item/line-item.model';
 import { OrderLineItem } from 'ish-core/models/order/order.model';
@@ -17,16 +16,10 @@ export class LineItemListElementComponent implements OnInit {
   @Input() pli: Partial<LineItemView & OrderLineItem>;
   @Input() editable = true;
   @Input() lineItemViewType: 'simple' | 'availability';
-  isFeatureEnabled = false;
 
-  constructor(
-    private context: ProductContextFacade,
-    private checkoutFacade: CheckoutFacade,
-    private featureToggleService: FeatureToggleService
-  ) {}
+  constructor(private context: ProductContextFacade, private checkoutFacade: CheckoutFacade) {}
 
   ngOnInit() {
-    this.isFeatureEnabled = this.featureToggleService.enabled('extendedLineItemContent');
     this.context.hold(this.context.validDebouncedQuantityUpdate$(), quantity => {
       this.checkoutFacade.updateBasketItem({ itemId: this.pli.id, quantity });
     });
