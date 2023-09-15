@@ -163,6 +163,38 @@ If the cache feature is switched off, all caching for pre-rendered pages is disa
 The cache duration for pre-rendered pages can be customized using `CACHE_DURATION_NGINX_OK` (for successful responses) and `CACHE_DURATION_NGINX_NF` (for 404 responses).
 The value supplied must be in the `time` format that is supported by [nginx proxy_cache_valid](http://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_cache_valid).
 
+### Shared Redis Cache
+
+Multiple nginx instances can share the same Redis cache if this feature is activated.
+To use the shared Redis cache, the environment variable `REDIS_URI` must be provided with a valid Redis Entrypoint.
+
+The Redis URI has the following format: `redis://USERNAME:PASSWORD@HOST:PORT/DB`
+
+To use a secure connection, use `rediss://` instead of `redis://`.
+The parameters `USERNAME`, `PASSWORD` and `DB` are optional.
+
+The current implementation supports only Redis deployments with a single entrypoint.
+Redis Cluster setup is not supported because the redirect handling is not implemented.
+Connecting to Redis Sentinel is also not supported.
+For production setups, we recommend using a Redis cloud service.
+
+#### Cache timing
+
+The cache duration for pre-rendered pages can be customized using `CACHE_DURATION_NGINX_OK`.
+The value is transferred to [srcache_default_expire](https://github.com/openresty/srcache-nginx-module#srcache_default_expire).
+Using `CACHE_DURATION_NGINX_NF` is not supported with Redis cache.
+404 pages are cached with the same duration as successful responses.
+
+#### Clearing the Redis Cache
+
+Because the cache is no longer embedded into the nginx container, cache clearing has to be done separately.
+Use a redis cli to send a `flushdb` command to the Redis instance.
+This can be done using docker with the following command:
+
+```bash
+docker run --rm -it bitnami/redis redis-cli -u <REDIS_URI> flushdb
+```
+
 ## Further References
 
 - [Concept - Multi-Site Handling](../concepts/multi-site-handling.md)
