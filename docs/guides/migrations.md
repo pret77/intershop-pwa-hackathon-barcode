@@ -11,6 +11,8 @@ kb_sync_latest_only
 
 We renamed the input parameter 'id' to 'productListingId' for the product listing component to avoid unintentionally having more than one element with the same id in the HTML document.
 
+Basket line-item functionalities have been extracted from the `basket.service` into a separate `basket-items.service`.
+
 ## From 4.1 to 4.2
 
 The basket attribute 'orderReferenceId' is now saved as native attribute 'externalOrderReference' at the basket, but it still exists at the basket and can be displayed further on if needed.
