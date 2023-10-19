@@ -97,6 +97,11 @@ export class RegistrationFormConfigurationService {
             },
           },
           {
+            type: 'ish-registration-newsletter-field',
+            key: 'newsletterSubscription',
+            defaultValue: true,
+          },
+          {
             type: 'ish-captcha-field',
             props: {
               topic: 'register',
