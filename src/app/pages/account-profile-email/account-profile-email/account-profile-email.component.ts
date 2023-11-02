@@ -1,10 +1,12 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { FormlyFieldConfig } from '@ngx-formly/core';
+import { map } from 'rxjs';
 
 import { Credentials } from 'ish-core/models/credentials/credentials.model';
 import { HttpError } from 'ish-core/models/http-error/http-error.model';
 import { User } from 'ish-core/models/user/user.model';
+import { NewsletterService } from 'ish-core/services/newsletter/newsletter.service';
 import { markAsDirtyRecursive } from 'ish-shared/forms/utils/form-utils';
 import { SpecialValidators } from 'ish-shared/forms/validators/special-validators';
 
@@ -27,11 +29,18 @@ export class AccountProfileEmailComponent implements OnInit {
   fields: FormlyFieldConfig[];
   model: Partial<User>;
 
+  newsletterService: NewsletterService;
+  subscribedToNewsletter: boolean;
+
   submitted = false;
 
   ngOnInit() {
     this.model = {};
     this.fields = this.getFields();
+
+    this.newsletterService
+      .getSubscription(this.currentUser.email)
+      .pipe(map((subscribed: boolean) => (this.subscribedToNewsletter = subscribed)));
   }
 
   private getFields() {
@@ -41,6 +50,7 @@ export class AccountProfileEmailComponent implements OnInit {
           validation: [SpecialValidators.equalTo('emailConfirmation', 'email')],
         },
         fieldGroup: [
+          // New Email
           {
             key: 'email',
             type: 'ish-email-field',
@@ -50,7 +60,7 @@ export class AccountProfileEmailComponent implements OnInit {
               required: true,
             },
           },
-
+          // New Email confirmation
           {
             key: 'emailConfirmation',
             type: 'ish-text-input-field',
@@ -67,6 +77,7 @@ export class AccountProfileEmailComponent implements OnInit {
               },
             },
           },
+          // Password
           {
             key: 'currentPassword',
             type: 'ish-password-field',
@@ -79,6 +90,18 @@ export class AccountProfileEmailComponent implements OnInit {
               messages: {
                 required: 'account.update_password.old_password.error.required',
               },
+            },
+          },
+          // Newsletter
+          {
+            // TODO: how to check for feature enabled?
+            // TODO: not displayed
+            key: 'newsletterSubscription',
+            type: 'ish-registration-newsletter-field',
+            default: this.subscribedToNewsletter,
+            props: {
+              required: false,
+              label: 'Newsletter',
             },
           },
         ],
