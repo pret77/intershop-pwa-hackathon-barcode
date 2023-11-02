@@ -8,14 +8,14 @@ export class NewsletterService {
   constructor(private apiService: ApiService) {}
 
   subscribe(userEmail: string) {
-    const requestBody = {
+    const body = {
       name: 'Newsletter',
       type: 'Subscription',
       active: true,
       recipient: userEmail,
     };
 
-    return this.apiService.post(`subscriptions`, requestBody);
+    this.apiService.post(`subscriptions`, body).subscribe(data => console.log('data: ', data));
   }
 
   getSubscription(userEmail: string): Observable<boolean> {

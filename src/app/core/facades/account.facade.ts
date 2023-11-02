@@ -11,6 +11,7 @@ import { PasswordReminderUpdate } from 'ish-core/models/password-reminder-update
 import { PasswordReminder } from 'ish-core/models/password-reminder/password-reminder.model';
 import { PaymentInstrument } from 'ish-core/models/payment-instrument/payment-instrument.model';
 import { User } from 'ish-core/models/user/user.model';
+import { NewsletterService } from 'ish-core/services/newsletter/newsletter.service';
 import { MessagesPayloadType } from 'ish-core/store/core/messages';
 import {
   createCustomerAddress,
@@ -72,7 +73,7 @@ export class AccountFacade {
    */
   private internalUserError$ = new Subject<HttpError>();
 
-  constructor(private store: Store) {
+  constructor(private store: Store, private newsletterService: NewsletterService) {
     store.pipe(select(getUserError)).subscribe(this.internalUserError$);
   }
 
@@ -102,8 +103,13 @@ export class AccountFacade {
     options?.revokeApiToken ? this.store.dispatch(logoutUser()) : this.store.dispatch(logoutUserSuccess());
   }
 
-  createUser(body: CustomerRegistrationType) {
+  createUser(body: CustomerRegistrationType, subscribedToNewsletter: boolean) {
     this.store.dispatch(createUser(body));
+
+    if (subscribedToNewsletter) {
+      // handle conflict if email already exists
+      this.newsletterService.subscribe(body.user.email);
+    }
   }
 
   updateUser(user: User, successMessage?: MessagesPayloadType) {

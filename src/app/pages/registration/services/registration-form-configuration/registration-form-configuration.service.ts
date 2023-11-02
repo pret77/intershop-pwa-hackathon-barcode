@@ -173,7 +173,9 @@ export class RegistrationFormConfigurationService {
       registration.captcha = form.get('captcha').value;
       registration.captchaAction = form.get('captchaAction').value;
 
-      this.accountFacade.createUser(registration);
+      const subscribedToNewsletter = formValue.newsletterSubscription;
+
+      this.accountFacade.createUser(registration, subscribedToNewsletter);
     }
   }
 
