@@ -9,8 +9,4 @@ import { FieldType, FieldTypeConfig } from '@ngx-formly/core';
   templateUrl: './registration-newsletter-field.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RegistrationNewsletterFieldComponent extends FieldType<FieldTypeConfig> {
-  get subscribed(): boolean {
-    return true;
-  }
-}
+export class RegistrationNewsletterFieldComponent extends FieldType<FieldTypeConfig> {}
