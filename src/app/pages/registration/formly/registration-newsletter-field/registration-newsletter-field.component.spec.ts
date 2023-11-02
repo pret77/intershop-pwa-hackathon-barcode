@@ -2,9 +2,10 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { FormlyModule } from '@ngx-formly/core';
 import { TranslateModule } from '@ngx-translate/core';
-import { MockDirective } from 'ng-mocks';
+import { MockDirective, MockPipe } from 'ng-mocks';
 
 import { ServerHtmlDirective } from 'ish-core/directives/server-html.directive';
+import { ServerSettingPipe } from 'ish-core/pipes/server-setting.pipe';
 import { FormlyTestingComponentsModule } from 'ish-shared/formly/dev/testing/formly-testing-components.module';
 import { FormlyTestingContainerComponent } from 'ish-shared/formly/dev/testing/formly-testing-container/formly-testing-container.component';
 
@@ -25,7 +26,11 @@ describe('Registration Newsletter Field Component', () => {
         ReactiveFormsModule,
         TranslateModule.forRoot(),
       ],
-      declarations: [MockDirective(ServerHtmlDirective), RegistrationNewsletterFieldComponent],
+      declarations: [
+        MockDirective(ServerHtmlDirective),
+        MockPipe(ServerSettingPipe, () => true),
+        RegistrationNewsletterFieldComponent,
+      ],
     }).compileComponents();
   });
 
