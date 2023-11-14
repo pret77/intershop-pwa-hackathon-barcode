@@ -21,3 +21,5 @@ Head over to our documentation section for a [Quick Start Guide](./docs/guides/g
 ## License
 
 The Intershop Progressive Web App is made available under the [MIT license](./LICENSE).
+
+Test
