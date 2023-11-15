@@ -12,7 +12,6 @@ import {ShoppingFacade} from "ish-core/facades/shopping.facade";
 })
 export class HacketonScannerComponent implements OnInit {
   private reader = new BrowserMultiFormatReader();
-  private device = this.reader.listVideoInputDevices().then((devices: any) => devices[0].deviceId);
   scannerVisible = false;
   header: HTMLElement | null = undefined;
 
@@ -22,6 +21,7 @@ export class HacketonScannerComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.reader.timeBetweenDecodingAttempts = 1000
     this.header = document.querySelector('header.top');
     console.log(this.header);
   }
@@ -29,12 +29,18 @@ export class HacketonScannerComponent implements OnInit {
   toggleScanner() {
     this.scannerVisible = !this.scannerVisible;
     this.header?.classList.toggle('hide');
-    this.scannerStart();
+
+    if (this.scannerVisible) {
+      this.scannerStart();
+    } else {
+      this.scannerStop();
+    }
   }
 
   scannerStart = async () => {
     try {
-      await this.reader.decodeFromVideoDevice(await this.device, 'scanner', this.scannerRead);
+      const device = await this.reader.listVideoInputDevices().then((devices: any) => devices[0].deviceId);
+      await this.reader.decodeFromVideoDevice(device, 'scanner', this.scannerRead);
     } catch (e) {}
   };
 
