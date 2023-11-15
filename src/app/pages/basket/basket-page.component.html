@@ -1,6 +1,7 @@
 <div class="marketing-area">
   <ish-content-include includeId="include.basket.base.top.pagelet2-Include"></ish-content-include>
 </div>
+<ish-hacketon-scanner></ish-hacketon-scanner>
 
 <ng-container *ngIf="basket$ | async as basket; else emptyBasket">
   <ng-container *ngIf="basket.lineItems.length; else emptyBasket">

@@ -9,6 +9,7 @@
     "downlevelIteration": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
+    "skipLibCheck": true,
     // leave this as CommonJS, so scripts can be run with 'npx ts-node'
     // see https://github.com/TypeStrong/ts-node#commonjs-vs-native-ecmascript-modules
     "module": "CommonJS",
