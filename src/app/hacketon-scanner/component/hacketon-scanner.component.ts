@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { BrowserMultiFormatReader } from '@zxing/library';
+import { first } from 'rxjs';
 
 import { BasketService } from 'ish-core/services/basket/basket.service';
 import { ProductsService } from 'ish-core/services/products/products.service';
@@ -32,8 +33,6 @@ export class HacketonScannerComponent implements OnInit {
 
   scannerStart = async () => {
     try {
-      console.log('scannerStart');
-
       await this.reader.decodeFromVideoDevice(await this.device, 'scanner', this.scannerRead);
     } catch (e) {}
   };
@@ -44,15 +43,21 @@ export class HacketonScannerComponent implements OnInit {
 
   scannerRead = (res: any, _: any) => {
     //if (res && res !== 16584922671032) {
-    this.code = res;
-
-    console.log('scannerRead', res);
-
-    this.prodService
-      .getProductByGtin(res.text)
-      // eslint-disable-next-line rxjs-angular/prefer-takeuntil
-      .subscribe(res => console.log(res));
-
-    //}
+    if (res) {
+      this.code = res;
+      this.prodService
+        .getProductByGtin(res.text)
+        .pipe(first())
+        // eslint-disable-next-line rxjs-angular/prefer-takeuntil
+        .subscribe(product => {
+          console.log('product', product);
+          this.basket.addItemsToBasket([
+            {
+              sku: product.sku || '00638600',
+              quantity: product.minOrderQuantity || 1,
+            },
+          ]);
+        });
+    }
   };
 }
