@@ -4,6 +4,7 @@ import { first } from 'rxjs';
 
 import { BasketService } from 'ish-core/services/basket/basket.service';
 import { ProductsService } from 'ish-core/services/products/products.service';
+import {switchMap} from "rxjs/operators";
 
 @Component({
   selector: 'ish-hacketon-scanner',
@@ -15,8 +16,6 @@ export class HacketonScannerComponent implements OnInit {
   private device = this.reader.listVideoInputDevices().then((devices: any) => devices[0].deviceId);
   scannerVisible = false;
   header: HTMLElement | null = undefined;
-
-  code?: any;
 
   constructor(private prodService: ProductsService, private basket: BasketService) {}
 
@@ -42,22 +41,22 @@ export class HacketonScannerComponent implements OnInit {
   };
 
   scannerRead = (res: any, _: any) => {
-    //if (res && res !== 16584922671032) {
     if (res) {
-      this.code = res;
       this.prodService
         .getProductByGtin(res.text)
-        .pipe(first())
+        .pipe(
+          first(),
+          switchMap((product) =>
+            this.basket.addItemsToBasket([{
+                sku: product.sku,
+                quantity: product.minOrderQuantity || 1,
+              }]
+            ).pipe(first())
+          )
+        )
         // eslint-disable-next-line rxjs-angular/prefer-takeuntil
-        .subscribe(product => {
-          console.log('product', product);
-          this.basket.addItemsToBasket([
-            {
-              sku: product.sku || '00638600',
-              quantity: product.minOrderQuantity || 1,
-            },
-          ]);
-        });
+        // .subscribe((x) => console.log(x));
+        .subscribe();
     }
   };
 }
