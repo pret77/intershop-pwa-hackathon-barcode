@@ -52,6 +52,24 @@ export class ProductsService {
   }
 
   /**
+   * Get the full Product data for the given Product GTIN (barcode).
+   *
+   * @param gtin  The Product GTIN for the product of interest.
+   * @returns    The Product data.
+   */
+  getProductByGtin(gtin: string): Observable<Product> {
+    if (!gtin) {
+      return throwError(() => new Error('getProduct() called without a gtin'));
+    }
+
+    const params = new HttpParams().set('allImages', true).set('extended', true);
+
+    return this.apiService
+      .get<ProductData>(`products/gtin/${gtin}`, { sendSPGID: true, params })
+      .pipe(map(element => this.productMapper.fromData(element)));
+  }
+
+  /**
    * Get a sorted list of all products (as SKU list) assigned to a given Category respecting pagination.
    *
    * @param categoryUniqueId  The unique Category ID.
