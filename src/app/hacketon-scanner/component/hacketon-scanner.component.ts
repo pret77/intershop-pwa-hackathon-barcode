@@ -2,9 +2,8 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { BrowserMultiFormatReader } from '@zxing/library';
 import { first } from 'rxjs';
 
-import { BasketService } from 'ish-core/services/basket/basket.service';
 import { ProductsService } from 'ish-core/services/products/products.service';
-import {switchMap} from "rxjs/operators";
+import {ShoppingFacade} from "ish-core/facades/shopping.facade";
 
 @Component({
   selector: 'ish-hacketon-scanner',
@@ -17,7 +16,10 @@ export class HacketonScannerComponent implements OnInit {
   scannerVisible = false;
   header: HTMLElement | null = undefined;
 
-  constructor(private prodService: ProductsService, private basket: BasketService) {}
+  constructor(
+    private prodService: ProductsService,
+    private shoppingFacade: ShoppingFacade
+  ) {}
 
   ngOnInit(): void {
     this.header = document.querySelector('header.top');
@@ -44,19 +46,11 @@ export class HacketonScannerComponent implements OnInit {
     if (res) {
       this.prodService
         .getProductByGtin(res.text)
-        .pipe(
-          first(),
-          switchMap((product) =>
-            this.basket.addItemsToBasket([{
-                sku: product.sku,
-                quantity: product.minOrderQuantity || 1,
-              }]
-            ).pipe(first())
-          )
-        )
+        .pipe(first())
         // eslint-disable-next-line rxjs-angular/prefer-takeuntil
-        // .subscribe((x) => console.log(x));
-        .subscribe();
+        .subscribe((product) => {
+          this.shoppingFacade.addProductToBasket(product.sku, product.minOrderQuantity || 1)
+        });
     }
   };
 }
