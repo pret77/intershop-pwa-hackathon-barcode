@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { BrowserMultiFormatReader } from '@zxing/library';
 import { first } from 'rxjs';
 import * as SDCBarcode from 'scandit-web-datacapture-barcode';
 import * as SDCCore from 'scandit-web-datacapture-core';
@@ -8,12 +7,11 @@ import { ShoppingFacade } from 'ish-core/facades/shopping.facade';
 import { ProductsService } from 'ish-core/services/products/products.service';
 
 @Component({
-  selector: 'ish-hacketon-scanner',
+  selector: 'ish-hacketon-scanner-2',
   templateUrl: './hacketon-scanner.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HacketonScannerComponent implements OnInit {
-  private reader = new BrowserMultiFormatReader();
+export class HacketonScanner2Component implements OnInit {
   scannerVisible = false;
   header: HTMLElement | null = undefined;
 
@@ -84,18 +82,7 @@ export class HacketonScannerComponent implements OnInit {
   toggleScanner() {
     this.scannerVisible = !this.scannerVisible;
     this.header?.classList.toggle('hide');
-    //this.scannerStart();
   }
-
-  // scannerStart = async () => {
-  //   try {
-  //     await this.reader.decodeFromVideoDevice(await this.device, 'scanner', this.scannerRead);
-  //   } catch (e) {}
-  // };
-
-  // scannerStop = () => {
-  //   this.reader.reset();
-  // };
 
   scannerRead = (res: string) => {
     if (res) {
