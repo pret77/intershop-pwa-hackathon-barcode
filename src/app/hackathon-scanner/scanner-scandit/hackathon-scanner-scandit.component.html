@@ -1,4 +1,4 @@
-<button (click)="toggleScanner()" type="button" class="btn btn-primary">
+<button (click)="toggleScanner()" type="button" class="btn btn-secondary">
   <svg
     xmlns="http://www.w3.org/2000/svg"
     xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -15,7 +15,7 @@
   Scanner 2
 </button>
 <div class="scanner" [ngClass]="{ show: scannerVisible }">
-  <button (click)="toggleScanner()" type="button" class="btn btn-primary">X</button>
+  <button (click)="toggleScanner()" type="button" class="btn">X</button>
 
   <div class="scanner-video" id="data-capture-view"></div>
 </div>

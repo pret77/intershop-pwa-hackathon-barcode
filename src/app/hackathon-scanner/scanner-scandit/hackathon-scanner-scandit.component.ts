@@ -65,8 +65,12 @@ export class HackathonScannerScanditComponent implements OnInit {
     });
 
     const view = await SDCCore.DataCaptureView.forContext(context);
-    view.connectToElement(document.getElementById('data-capture-view')!);
-    view.addControl(new SDCCore.CameraSwitchControl());
+    const elm = document.getElementById('data-capture-view');
+    if (elm) {
+      view.connectToElement(elm);
+      view.addControl(new SDCCore.CameraSwitchControl());
+      view.addControl(new SDCCore.TorchSwitchControl());
+    }
 
     const barcodeCaptureOverlay = await SDCBarcode.BarcodeCaptureOverlay.withBarcodeCaptureForViewWithStyle(
       this.scannerBarcodeCapture,
