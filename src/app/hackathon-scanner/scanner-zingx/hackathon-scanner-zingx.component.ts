@@ -6,11 +6,11 @@ import { ShoppingFacade } from 'ish-core/facades/shopping.facade';
 import { ProductsService } from 'ish-core/services/products/products.service';
 
 @Component({
-  selector: 'ish-hacketon-scanner-1',
-  templateUrl: './hacketon-scanner1.component.html',
+  selector: 'ish-hackathon-scanner-zingx',
+  templateUrl: './hackathon-scanner-zingx.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HacketonScanner1Component implements OnInit {
+export class HackathonScannerZingxComponent implements OnInit {
   private reader = new BrowserMultiFormatReader();
   scannerVisible = false;
   header: HTMLElement | null = undefined;

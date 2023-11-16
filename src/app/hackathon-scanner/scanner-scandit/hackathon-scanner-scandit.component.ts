@@ -7,11 +7,11 @@ import { ShoppingFacade } from 'ish-core/facades/shopping.facade';
 import { ProductsService } from 'ish-core/services/products/products.service';
 
 @Component({
-  selector: 'ish-hacketon-scanner-2',
-  templateUrl: './hacketon-scanner2.component.html',
+  selector: 'ish-hackathon-scanner-scandit',
+  templateUrl: './hackathon-scanner-scandit.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HacketonScanner2Component implements OnInit {
+export class HackathonScannerScanditComponent implements OnInit {
   scannerVisible = false;
   header: HTMLElement | null = undefined;
   scannerCamera: SDCCore.Camera = undefined;
