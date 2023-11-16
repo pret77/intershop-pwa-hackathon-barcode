@@ -8,7 +8,7 @@ import { ProductsService } from 'ish-core/services/products/products.service';
 
 @Component({
   selector: 'ish-hacketon-scanner-2',
-  templateUrl: './hacketon-scanner.component.html',
+  templateUrl: './hacketon-scanner2.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HacketonScanner2Component implements OnInit {

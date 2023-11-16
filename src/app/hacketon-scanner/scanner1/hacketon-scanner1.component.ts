@@ -6,8 +6,8 @@ import { ShoppingFacade } from 'ish-core/facades/shopping.facade';
 import { ProductsService } from 'ish-core/services/products/products.service';
 
 @Component({
-  selector: 'ish-hacketon-scanner-2',
-  templateUrl: './hacketon-scanner.component.html',
+  selector: 'ish-hacketon-scanner-1',
+  templateUrl: './hacketon-scanner1.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HacketonScannerComponent implements OnInit {
