@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { BrowserMultiFormatReader } from '@zxing/library';
 import { first } from 'rxjs';
 
@@ -10,7 +10,7 @@ import { ProductsService } from 'ish-core/services/products/products.service';
   templateUrl: './hackathon-scanner-zingx.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HackathonScannerZingxComponent implements OnInit {
+export class HackathonScannerZingxComponent implements OnInit, OnDestroy {
   private reader = new BrowserMultiFormatReader();
   scannerVisible = false;
   header: HTMLElement | null = undefined;
@@ -20,6 +20,10 @@ export class HackathonScannerZingxComponent implements OnInit {
   ngOnInit(): void {
     this.reader.timeBetweenDecodingAttempts = 1000;
     this.header = document.querySelector('header.top');
+  }
+
+  ngOnDestroy(): void {
+    console.log('destroy');
   }
 
   toggleScanner() {
@@ -35,7 +39,7 @@ export class HackathonScannerZingxComponent implements OnInit {
 
   scannerStart = async () => {
     try {
-      const device = await this.reader.listVideoInputDevices().then((devices: any) => devices[0].deviceId);
+      const device = await this.reader.listVideoInputDevices().then((devices: any) => devices[2].deviceId);
       await this.reader.decodeFromVideoDevice(device, 'scanner', this.scannerRead);
     } catch (e) {}
   };

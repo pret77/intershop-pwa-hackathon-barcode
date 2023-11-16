@@ -1,6 +1,7 @@
 .scanners {
   display: flex;
   gap: 10px;
+  padding-top: 12px;
 }
 
 .scanner {
@@ -72,6 +73,6 @@
 
   //sorry for this :)
   + .wrapper {
-    margin-top: 119px !important;
+    margin-top: 145px !important;
   }
 }

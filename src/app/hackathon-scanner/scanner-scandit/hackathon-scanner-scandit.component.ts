@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { first } from 'rxjs';
 import * as SDCBarcode from 'scandit-web-datacapture-barcode';
 import * as SDCCore from 'scandit-web-datacapture-core';
@@ -11,7 +11,7 @@ import { ProductsService } from 'ish-core/services/products/products.service';
   templateUrl: './hackathon-scanner-scandit.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HackathonScannerScanditComponent implements OnInit {
+export class HackathonScannerScanditComponent implements OnInit, OnDestroy {
   scannerVisible = false;
   header: HTMLElement | null = undefined;
   scannerCamera: SDCCore.Camera = undefined;
@@ -21,6 +21,10 @@ export class HackathonScannerScanditComponent implements OnInit {
 
   ngOnInit() {
     this.header = document.querySelector('header.top');
+  }
+
+  ngOnDestroy(): void {
+    console.log('destroy');
   }
 
   async openScanner(): Promise<void> {
