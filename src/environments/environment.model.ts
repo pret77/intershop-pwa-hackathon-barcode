@@ -148,7 +148,7 @@ export interface Environment {
 
 export const ENVIRONMENT_DEFAULTS: Omit<Environment, 'icmChannel'> = {
   /* INTERSHOP COMMERCE MANAGEMENT REST API CONFIGURATION */
-  icmBaseURL: 'https://intershop-int.lekkerland24.nl',
+  icmBaseURL: 'https://intershop-uat.lekkerland24.nl',
   icmServer: 'INTERSHOP/rest/WFS',
   icmServerStatic: 'INTERSHOP/static/WFS',
   icmApplication: 'rest',

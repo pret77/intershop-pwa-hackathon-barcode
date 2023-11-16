@@ -105,8 +105,6 @@
     "ngx-toastr": "^16.2.0",
     "pm2": "^5.3.0",
     "rxjs": "~7.8.1",
-    "scandit-sdk": "^5.13.5",
-    "scandit-sdk-angular": "^3.1.1",
     "scandit-web-datacapture-barcode": "^6.18.3",
     "scandit-web-datacapture-core": "^6.18.3",
     "swiper": "^8.4.7",

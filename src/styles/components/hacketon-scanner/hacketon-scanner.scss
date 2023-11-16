@@ -9,18 +9,18 @@
   height: 200px;
   overflow: hidden;
 
-  &:after {
-    content: '';
-    position: absolute;
-    z-index: 19;
-    left: 12.95%;
-    width: 76%;
-    top: 21%;
-    height: 56.25%;
-    box-shadow: 0px 0px 1px 100vmax rgb(0 0 0 / 58%);
-    border: 2px solid $color-inverse;
-    border-radius: 10px;
-  }
+  // &:after {
+  //   content: '';
+  //   position: absolute;
+  //   z-index: 19;
+  //   left: 12.95%;
+  //   width: 76%;
+  //   top: 21%;
+  //   height: 56.25%;
+  //   box-shadow: 0px 0px 1px 100vmax rgb(0 0 0 / 58%);
+  //   border: 2px solid $color-inverse;
+  //   border-radius: 10px;
+  // }
 
   .btn {
     position: absolute;
