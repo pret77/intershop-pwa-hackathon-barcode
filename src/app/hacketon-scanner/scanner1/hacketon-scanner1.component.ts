@@ -10,7 +10,7 @@ import { ProductsService } from 'ish-core/services/products/products.service';
   templateUrl: './hacketon-scanner1.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HacketonScannerComponent implements OnInit {
+export class HacketonScanner1Component implements OnInit {
   private reader = new BrowserMultiFormatReader();
   scannerVisible = false;
   header: HTMLElement | null = undefined;
@@ -20,7 +20,6 @@ export class HacketonScannerComponent implements OnInit {
   ngOnInit(): void {
     this.reader.timeBetweenDecodingAttempts = 1000;
     this.header = document.querySelector('header.top');
-    console.log(this.header);
   }
 
   toggleScanner() {
